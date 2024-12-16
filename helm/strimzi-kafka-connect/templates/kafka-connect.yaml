@@ -1,0 +1,167 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: {{ tpl .Values.strimziConfig.connectClusterName $ | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+  namespace: {{ .Release.Namespace }}
+{{- if .Values.commonLabels }}
+  labels: {{- tpl ( toYaml .Values.commonLabels ) $ | nindent 4 }}
+{{- end }}
+{{- $strimziConnectorAnnotation := .Values.strimziConfig.useConnectorResources | toString | dict "strimzi.io/use-connector-resources" }}
+{{- with merge $strimziConnectorAnnotation .Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+spec:
+  version: {{ tpl .Values.strimziConfig.version $ }}
+  replicas: {{ .Values.deploymentConfig.replicaCount }}
+  {{- if .Values.deploymentConfig.image }}
+  image: {{ tpl .Values.deploymentConfig.image.registry $ }}/{{ tpl .Values.deploymentConfig.image.repository $ }}:{{ tpl .Values.deploymentConfig.image.tag $ }}
+  {{- end }}
+  bootstrapServers: {{ tpl .Values.strimziConfig.bootstrapServers $ }}
+  template:
+    {{- $advancedConfig := omit .Values.strimziConfig.advancedConfig "podDisruptionBudget" "podSet" "pod" "connectContainer" }}
+    {{- if $advancedConfig }}
+      {{- tpl ( $advancedConfig | toYaml ) $ | nindent 4 }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.podDisruptionBudget }}
+    podDisruptionBudget: {{- tpl ( toYaml .Values.deploymentConfig.podDisruptionBudget ) $ | nindent 6 }}
+    {{- end }}
+    podSet:
+      {{- if .Values.strimziConfig.labels }}
+      metadata:
+        labels:
+          {{- tpl ( toYaml .Values.strimziConfig.labels ) $ | nindent 10 }}
+      {{- end }}
+    pod:
+      metadata:
+      {{- if .Values.strimziConfig.labels }}
+        labels: {{- tpl ( toYaml .Values.strimziConfig.labels ) $ | nindent 10 }}
+      {{- end }}
+      {{- if .Values.strimziConfig.annotations }}
+        annotations: {{- tpl ( toYaml .Values.strimziConfig.annotations ) $ | nindent 10 }}
+      {{- end }}
+    {{- if .Values.deploymentConfig.imagePullSecrets }}
+      imagePullSecrets: {{- tpl ( toYaml .Values.deploymentConfig.imagePullSecrets ) $ | nindent 8 }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.podSecurityContext }}
+      securityContext: {{- tpl ( toYaml .Values.deploymentConfig.podSecurityContext ) $ | nindent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ default "30" .Values.deploymentConfig.terminationGracePeriodSeconds }}
+    {{- if .Values.deploymentConfig.affinity }}
+      affinity: {{- tpl ( toYaml .Values.deploymentConfig.affinity ) $ | nindent 8 }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.tolerations }}
+      tolerations: {{- tpl ( toYaml .Values.deploymentConfig.tolerations ) $ | nindent 8 }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- tpl ( toYaml .Values.deploymentConfig.topologySpreadConstraints ) $ | nindent 8 }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.priorityClassName }}
+      priorityClassName: {{ tpl .Values.deploymentConfig.priorityClassName $ }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.schedulerName }}
+      schedulerName: {{ tpl .Values.deploymentConfig.schedulerName $ }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.hostAliases }}
+      hostAliases: {{- tpl ( toYaml .Values.deploymentConfig.hostAliases ) $ | nindent 8 }}
+    {{- end }}
+      enableServiceLinks: {{ default "false" .Values.deploymentConfig.enableServiceLinks }}
+    {{- if .Values.deploymentConfig.tmpDirSizeLimit }}
+      tmpDirSizeLimit: {{ tpl .Values.deploymentConfig.tmpDirSizeLimit $ }}
+    {{- end }}
+    {{- if .Values.deploymentConfig.extraVolumes }}
+      volumes: {{- tpl ( toYaml .Values.deploymentConfig.extraVolumes ) $ | nindent 8 }}
+    {{- end }}
+    connectContainer:
+      {{- if .Values.deploymentConfig.connectSecurityContext }}
+      securityContext: {{- tpl ( toYaml .Values.deploymentConfig.connectSecurityContext ) $ | nindent 8 }}
+      {{- end }}
+      env: {{- tpl ( toYaml .Values.deploymentConfig.extraEnv ) $ | nindent 8 }}
+      {{- if .Values.strimziConfig.tracingConfig.enabled }}
+        {{- range $key, $value := .Values.strimziConfig.tracingConfig.parameters }}
+        - name: {{ $key | quote }}
+          value: {{ tpl ( $value | toString ) $ | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if .Values.deploymentConfig.extraVolumeMounts }}
+      volumeMounts: {{- tpl ( toYaml .Values.deploymentConfig.extraVolumeMounts ) $ | nindent 8 }}
+      {{- end }}
+
+{{- with .Values.deploymentConfig.jvmOptions }}
+  jvmOptions:
+  {{- range $key, $value := . }}
+   {{- if $value }}
+   {{- if or ( kindIs "map" $value ) ( kindIs "slice" $value ) }}
+    {{ $key | quote }}: {{- tpl ( $value | toYaml ) $ | nindent 6 }}
+   {{- else }}
+    {{ $key | quote }}: {{ tpl ( $value | toString ) $ | quote }}
+   {{- end }}
+   {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- with .Values.deploymentConfig.resources }}
+  resources:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.deploymentConfig.readinessProbe }}
+  readinessProbe:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.deploymentConfig.livenessProbe }}
+  livenessProbe:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.strimziConfig.loggingConfig }}
+  logging:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- if .Values.strimziConfig.tracingConfig.enabled }}
+  tracing:
+    type: opentelemetry
+{{- end }}
+
+{{- with .Values.strimziConfig.jmxOptions }}
+  jmxOptions:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- if .Values.strimziConfig.metricsConfig.enabled }}
+  {{- with .Values.strimziConfig.metricsConfig }}
+  metricsConfig:
+    {{- tpl ( omit . "enabled" "debeziumRules" "strimziRules" | toYaml ) $ | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{- with .Values.strimziConfig.authentication }}
+  authentication:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.strimziConfig.tls }}
+  tls:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.strimziConfig.rack }}
+  rack:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- if .Values.strimziConfig.clientRackInitImage }}
+  clientRackInitImage: {{ tpl .Values.strimziConfig.clientRackInitImage $ }}
+{{- end }}
+
+{{- with .Values.strimziConfig.build }}
+  build:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+
+{{- with .Values.connectConfig }}
+  config:
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}

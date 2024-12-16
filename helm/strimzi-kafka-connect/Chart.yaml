@@ -1,0 +1,16 @@
+apiVersion: v2
+appVersion: 3.8.0
+description: Strimzi Kafka Connect with Debezium Postgres Connector
+name: strimzi-kafka-connect
+version: 1.0.0
+type: application
+sources:
+  - https://github.com/dkadetov/strimzi-kafka-connect
+maintainers:
+  - name: dkadetov
+dependencies:
+  - name: strimzi-kafka-operator
+    version: 0.44.0
+    repository: oci://quay.io/strimzi-helm
+    alias: clusterOperator
+    condition: clusterOperator.enabled
