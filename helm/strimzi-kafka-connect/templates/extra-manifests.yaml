@@ -1,0 +1,5 @@
+{{- range .Values.externalConfig.extraManifests }}
+
+---
+{{ tpl ( toYaml . ) $ }}
+{{- end }}

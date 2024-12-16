@@ -1,0 +1,521 @@
+---
+
+# https://github.com/strimzi/strimzi-kafka-operator/blob/main/helm-charts/helm3/strimzi-kafka-operator/values.yaml
+# https://github.com/strimzi/strimzi-kafka-operator/blob/main/documentation/modules/operators/con-configuring-cluster-operator.adoc
+clusterOperator:
+  enabled: false
+
+  replicas: 1
+
+  leaderElection:
+    enable: false
+
+  image:
+    imagePullPolicy: IfNotPresent
+
+  logLevel: WARN
+
+  fullReconciliationIntervalMs: 60000
+
+  generatePodDisruptionBudget: true
+
+  resources:
+    limits:
+      memory: 384Mi
+      cpu: 500m
+    requests:
+      memory: 384Mi
+      cpu: 50m
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                strimzi.io/kind: cluster-operator
+            topologyKey: kubernetes.io/hostname
+
+commonLabels:
+  app.kubernetes.io/version: '{{ .Chart.Version }}'
+  app.kubernetes.io/app-version: '{{ .Chart.AppVersion }}'
+  app.kubernetes.io/name: kafka-connect
+  app.kubernetes.io/instance: '{{  tpl .Values.strimziConfig.connectClusterName .  }}'
+  app.kubernetes.io/part-of: 'strimzi-{{  tpl .Values.strimziConfig.connectClusterName .  }}'
+
+commonAnnotations: {}
+
+strimziConfig:
+  labels:
+    app.kubernetes.io/version: '{{ .Chart.Version }}'
+    app.kubernetes.io/app-version: '{{ .Chart.AppVersion }}'
+## The following labels are predefined and cannot be changed for resources created by strimzi operator:
+#   app.kubernetes.io/name: kafka-connect
+#   app.kubernetes.io/instance: '{{ .Values.strimziConfig.connectClusterName }}'
+#   app.kubernetes.io/part-of: 'strimzi-{{ .Values.strimziConfig.connectClusterName }}'
+#   app.kubernetes.io/managed-by: strimzi-cluster-operator
+#   strimzi.io/kind: KafkaConnect
+#   strimzi.io/name: '{{ .Values.strimziConfig.connectClusterName }}-connect'
+#   strimzi.io/cluster: '{{ .Values.strimziConfig.connectClusterName }}'
+#   strimzi.io/component-type: kafka-connect
+
+  annotations: {}
+
+  version: '{{ .Chart.AppVersion }}'
+  
+  connectClusterName: '{{ .Release.Name }}-kafka-connect'
+
+  useConnectorResources: true
+
+  bootstrapServers: ''
+
+  schemaRegistry: ''
+
+  authentication: {}
+
+  tls: {}
+
+  rack: {}
+
+  clientRackInitImage: ''
+
+  build: {}
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-KafkaJmxOptions-reference
+  jmxOptions: {}
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-KafkaConnectTemplate-reference
+  # Not considered: podDisruptionBudget, podSet, pod, connectContainer
+  advancedConfig: {}
+
+  metricsConfig:
+    enabled: true
+    debeziumRules: true
+    strimziRules: true
+    type: jmxPrometheusExporter
+    valueFrom:
+      configMapKeyRef:
+        name: '{{ .Release.Name }}-prometheus-metrics-config'
+        key: metricsConfig
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#property-kafka-connect-logging-reference
+  loggingConfig:
+    type: inline
+    loggers:
+      connect.root.logger.level: WARN # [INFO, ERROR, WARN, TRACE, DEBUG, FATAL, OFF]
+#      log4j.rootLogger: WARN
+#      log4j.logger.org.apache.kafka.connect.runtime.WorkerSourceTask: INFO
+#      log4j.logger.org.apache.kafka.connect.runtime.WorkerSinkTask: INFO
+
+  tracingConfig:
+    enabled: false
+    parameters:
+      ## opentelemetry
+#      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-opentelemetry-collector.observability.svc.cluster.local:4817 # Gateway case
+#      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+#      OTEL_SERVICE_NAME: '{{ tpl .Values.strimziConfig.connectClusterName . }}-otel'
+#      OTEL_PROPAGATORS: tracecontext # [tracecontext, b3multi]
+#      OTEL_TRACES_EXPORTER: otlp
+#      OTEL_TRACES_SAMPLER: always_on
+#      OTEL_METRICS_EXPORTER: none
+      ## jaeger
+#      OTEL_EXPORTER_JAEGER_ENDPOINT: http://otel-opentelemetry-collector.observability.svc.cluster.local:6831 # Gateway case
+#      OTEL_EXPORTER_JAEGER_PROTOCOL: udp/thrift.compact
+#      OTEL_SERVICE_NAME: '{{ tpl .Values.strimziConfig.connectClusterName . }}-jaeger'
+#      OTEL_TRACES_EXPORTER: jaeger
+      ## zipkin
+#      OTEL_EXPORTER_ZIPKIN_ENDPOINT: http://otel-opentelemetry-collector.observability.svc.cluster.local:9411/api/v2/spans
+#      OTEL_SERVICE_NAME: '{{ tpl .Values.strimziConfig.connectClusterName . }}-zipkin'
+#      OTEL_TRACES_EXPORTER: zipkin
+
+deploymentConfig:
+  replicaCount: 1
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#con-common-configuration-images-reference
+  image:
+    registry: ghcr.io
+    repository: dkadetov/strimzi-kafka-connect
+    tag: latest
+
+  imagePullSecrets: []
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#con-common-configuration-jvm-reference
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-JvmOptions-reference
+  jvmOptions:
+    gcLoggingEnabled: false
+    javaSystemProperties: []
+    -XX: {}
+    -Xms: ''
+    -Xmx: ''
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1536Mi
+    requests:
+      cpu: 100m
+      memory: 1536Mi
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-Probe-reference
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-Probe-reference
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 10
+    successThreshold: 1
+
+  podSecurityContext:
+    runAsUser: 1001
+    fsGroup: 0
+
+  connectSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    runAsUser: 1001
+    seccompProfile:
+      type: RuntimeDefault
+
+  priorityClassName: ''
+
+  terminationGracePeriodSeconds: 30
+
+  # If you want to use custom pod disruption budget, set clusterOperator.generatePodDisruptionBudget to false.
+  podDisruptionBudget: {}
+
+  topologySpreadConstraints: []
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ tpl .Values.strimziConfig.connectClusterName . }}'
+            topologyKey: kubernetes.io/hostname
+
+  tolerations: []
+
+  hostAliases: []
+
+  schedulerName: ''
+
+  enableServiceLinks: false
+
+  tmpDirSizeLimit: ''
+
+  extraEnv:
+    - name: K8S_APP_NAME
+      value: '{{ .Chart.Name }}'
+    - name: K8S_APP_VERSION
+      value: '{{ .Chart.Version }}'
+    - name: K8S_APP_INSTANCE
+      value: '{{ .Release.Name }}'
+    - name: DEBEZIUM_PG_USER
+      valueFrom:
+        secretKeyRef:
+          name: '{{ tpl .Values.externalConfig.debeziumConfig.secretName $ }}'
+          key: '{{ tpl .Values.externalConfig.debeziumConfig.postgresUsernameKey $ }}'
+    - name: DEBEZIUM_PG_PASS
+      valueFrom:
+        secretKeyRef:
+          name: '{{ tpl .Values.externalConfig.debeziumConfig.secretName $ }}'
+          key: '{{ tpl .Values.externalConfig.debeziumConfig.postgresPasswordKey $ }}'
+
+  # https://strimzi.io/docs/operators/latest/configuring.html#con-common-configuration-volumes-reference
+  # https://strimzi.io/docs/operators/latest/configuring.html#type-AdditionalVolume-reference
+  extraVolumes:
+    - name: external-configuration
+      configMap:
+        name: '{{ tpl .Values.externalConfig.configMap.name $ }}'
+        defaultMode: 365
+        optional: true
+
+  extraVolumeMounts:
+    - name: external-configuration
+      mountPath: '{{ tpl .Values.externalConfig.configMap.mountPath $ }}'
+
+# https://strimzi.io/docs/operators/latest/configuring.html#type-KafkaConnectSpec-reference
+connectConfig:
+  plugin.discovery: HYBRID_WARN # [ONLY_SCAN, HYBRID_WARN, HYBRID_FAIL, SERVICE_LOAD]
+  group.id: '{{ .Release.Name }}-connect-cluster'
+  connector.client.config.override.policy: All # [None, All]
+  topic.creation.enable: true
+  offset.flush.interval.ms: 30000 # default: 60000
+  offset.storage.topic: '{{ .Release.Name }}-connect-cluster-offsets'
+  offset.storage.replication.factor: 3
+  offset.storage.partitions: 3 # >= deploymentConfig.replicaCount
+  config.storage.topic: '{{ .Release.Name }}-connect-cluster-configs'
+  config.storage.replication.factor: 3
+  config.storage.partitions: 1 # usually one partition is enough
+  status.storage.topic: '{{ .Release.Name }}-connect-cluster-status'
+  status.storage.replication.factor: 3
+  status.storage.partitions: 3 # >= deploymentConfig.replicaCount
+  key.converter: io.confluent.connect.avro.AvroConverter
+  key.converter.schema.registry.url: '{{ tpl .Values.strimziConfig.schemaRegistry $ }}'
+  key.converter.schemas.enable: false
+  value.converter: io.confluent.connect.avro.AvroConverter
+  value.converter.schema.registry.url: '{{ tpl .Values.strimziConfig.schemaRegistry $ }}'
+  value.converter.schemas.enable: false
+  auto.register.schemas: true
+  config.providers: env, file, directory, secrets, configmaps
+  config.providers.env.class: org.apache.kafka.common.config.provider.EnvVarConfigProvider
+  config.providers.file.class: org.apache.kafka.common.config.provider.FileConfigProvider
+  config.providers.directory.class: org.apache.kafka.common.config.provider.DirectoryConfigProvider
+  config.providers.secrets.class: io.strimzi.kafka.KubernetesSecretConfigProvider
+  config.providers.configmaps.class: io.strimzi.kafka.KubernetesConfigMapConfigProvider
+
+# https://strimzi.io/docs/operators/latest/configuring.html#type-KafkaConnector-reference
+connectorConfig:
+  common:
+    spec:
+      state: running # [running, paused, stopped]
+      autoRestart: true
+      maxRestarts: '' # empty == indefinitely
+      tasksMax: 1
+      listOffsets:
+        enabled: false
+        configMapName: ''
+      alterOffsets:
+        enabled: false
+        configMapName: ''
+    config:
+      topic.creation.default.replication.factor: 3
+      topic.creation.default.partitions: 6
+      topic.creation.default.cleanup.policy: compact
+      topic.creation.default.compression.type: producer # [uncompressed, zstd, lz4, snappy, gzip, producer]
+
+      producer.override.compression.type: lz4
+      topic.creation.groups: compacted, deleted, dev
+
+      topic.creation.compacted.replication.factor: 3
+      topic.creation.compacted.partitions: 6
+      topic.creation.compacted.cleanup.policy: compact
+      topic.creation.compacted.compression.type: producer
+
+      topic.creation.deleted.replication.factor: 3
+      topic.creation.deleted.partitions: 6
+      topic.creation.deleted.cleanup.policy: delete
+      topic.creation.deleted.compression.type: producer
+
+      topic.creation.dev.replication.factor: 3
+      topic.creation.dev.partitions: 4
+      topic.creation.dev.cleanup.policy: compact
+      topic.creation.dev.compression.type: producer
+  debezium:
+    spec:
+      class: io.debezium.connector.postgresql.PostgresConnector
+    instances: []
+    config:
+      topic.creation.heartbeat.replication.factor: 3
+      topic.creation.heartbeat.partitions: 1
+      topic.creation.heartbeat.cleanup.policy: delete
+      topic.creation.heartbeat.compression.type: lz4
+      topic.creation.heartbeat.retention.ms: 86400000
+      topic.creation.heartbeat.include: .*debezium_signal|.*-debezium-.*-heartbeat\..*
+      topic.creation.groups: compacted, deleted, dev, heartbeat
+      topic.creation.group: default # default group for all connectors
+      topic.prefix: ''
+      namespace: '' # "topic.prefix" alias, has higher priority
+      signal.enabled: false
+      signal.enabled.channels: source # [source, kafka]
+      signal.data.collection: debezium.debezium_signal # cannot be overridden at an instance level; the same schema should be used as for "heartbeat.action.table"
+      plugin.name: pgoutput
+      snapshot.mode: initial
+      snapshot.delay.ms: 10000
+      snapshot.fetch.size: 10240
+      max.batch.size: 2048
+      max.queue.size: 8192
+      poll.interval.ms: 500
+      status.update.interval.ms: 10000
+      flush.lsn.source: true
+      session.timeout.ms: 45000
+      heartbeat.interval.ms: 10000
+      heartbeat.action.query: '' # See docs/HOW-TO-CONFIGURE.md#features
+      heartbeat.action.table: debezium.debezium_heartbeat # cannot be overridden at an instance level
+      topic.heartbeat.prefix: '' # by default: '{{ $.Values.connectorConfig.debezium.instances[*].name }}-heartbeat'
+      database.server.name: postgres
+      database.hostname: postgres
+      database.port: 5432
+      database.user: ${env:DEBEZIUM_PG_USER}
+      database.password: ${env:DEBEZIUM_PG_PASS}
+      database.sslmode: disable
+      database.sslrootcert: /mnt/external-configuration/psql-root.crt
+      publication.name: '' # by default: connectorConfig.debezium.instances[*].name
+      publication.autocreate.mode: filtered # [filtered, disabled]
+      slot.name: '' # by default: connectorConfig.debezium.instances[*].name
+      slot.max.retries: 6
+      slot.retry.delay.ms: 10000
+      transforms: RemoveString,ActivateTracingSpan
+      transforms.RemoveString.type: org.apache.kafka.connect.transforms.RegexRouter
+      transforms.RemoveString.regex: (.*)\.(public|debezium)\.(.*) # list all the schemas you use
+      transforms.RemoveString.replacement: '$1-connect.__db_name_placeholder__.$3'
+      transforms.ActivateTracingSpan.type: io.debezium.transforms.tracing.ActivateTracingSpan
+      transforms.ActivateTracingSpan.tracing.operation.name: debezium-read
+      transforms.ActivateTracingSpan.tracing.span.context.field: tracingspancontext
+      transforms.ActivateTracingSpan.tracing.with.context.field.only: false
+      transforms.ActivateTracingSpan.negate: true
+      transforms.ActivateTracingSpan.predicate: debeziumHeartbeat
+      predicates: debeziumHeartbeat
+      predicates.debeziumHeartbeat.type: org.apache.kafka.connect.transforms.predicates.TopicNameMatches
+      predicates.debeziumHeartbeat.pattern: .*debezium_signal|.*-debezium-.*-heartbeat\..*
+
+externalConfig:
+  rbac:
+    enabled: false
+    scope: namespaced
+    rules: []
+
+  podMonitor:
+    enabled: true
+    extraLabels: {}
+    namespace: '{{ .Release.Namespace }}'
+    metricsEndpoints:
+      - port: tcp-prometheus
+        path: /metrics
+        interval: 60s
+        scrapeInterval: 30s
+        scrapeTimeout: 15s
+        relabelings:
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(strimzi_io_.+)
+            replacement: $1
+            separator: ;
+          - action: replace
+            sourceLabels: [__meta_kubernetes_namespace]
+            targetLabel: namespace
+            regex: (.*)
+            replacement: $1
+            separator: ;
+          - action: replace
+            sourceLabels: [__meta_kubernetes_pod_name]
+            targetLabel: kubernetes_pod_name
+            regex: (.*)
+            replacement: $1
+            separator: ;
+          - action: replace
+            sourceLabels: [__meta_kubernetes_pod_node_name]
+            targetLabel: node_name
+            regex: (.*)
+            replacement: $1
+            separator: ;
+          - action: replace
+            sourceLabels: [__meta_kubernetes_pod_host_ip]
+            targetLabel: node_ip
+            regex: (.*)
+            replacement: $1
+            separator: ;
+
+  configMap:
+    enabled: false
+    name: '{{ .Release.Name }}-external-config'
+    mountPath: /mnt/external-configuration # should start with /mnt
+    content:
+      debezium-bootstrap.sh: '{{ include "debezium.cmd" $ }}'
+      psql-root.crt: undefined
+      metricsConfig:
+      loggingConfig:
+
+  secret:
+    enabled: false
+    name: '{{ .Release.Name }}-external-secret'
+    content:
+      postgresUser: postgres
+      postgresPassword: postgres
+
+  debeziumConfig:
+    secretName: '{{ tpl .Values.externalConfig.secret.name $ }}'
+    postgresUsernameKey: postgresUser
+    postgresPasswordKey: postgresPassword
+    initJob:
+      enabled: false
+
+      ttlSecondsAfterFinished: 60
+
+      restartPolicy: Never
+
+      backoffLimit: 1
+
+      image:
+        registry: mirror.gcr.io
+        repository: library/postgres
+        tag: 14-alpine
+        imagePullPolicy: IfNotPresent
+
+      command:
+        - 'bash'
+
+      args:
+        - '/debezium-bootstrap.sh'
+
+      extraLabels: {}
+
+      extraEnv:
+        - name: PGHOST
+          value: '{{ tpl ( index .Values.connectorConfig.debezium.config "database.hostname" ) $ }}'
+        - name: PGPORT
+          value: '{{ tpl ( index .Values.connectorConfig.debezium.config "database.port" | toString ) $ }}'
+        - name: PGSSLMODE
+          value: '{{ tpl ( index .Values.connectorConfig.debezium.config "database.sslmode" ) $ }}'
+        - name: PGSSLROOTCERT
+          value: /psql-root.crt
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: '{{ tpl .Values.externalConfig.debeziumConfig.secretName $ }}'
+              key: '{{ tpl .Values.externalConfig.debeziumConfig.postgresUsernameKey $ }}'
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: '{{ tpl .Values.externalConfig.debeziumConfig.secretName $ }}'
+              key: '{{ tpl .Values.externalConfig.debeziumConfig.postgresPasswordKey $ }}'
+
+      extraVolumes:
+        - name: debezium-config
+          configMap:
+            name: '{{ tpl .Values.externalConfig.configMap.name $ }}'
+            optional: true
+            defaultMode: 365
+
+      extraVolumeMounts:
+        - name: debezium-config
+          mountPath: /psql-root.crt
+          subPath: psql-root.crt
+          readOnly: true
+        - name: debezium-config
+          mountPath: /debezium-bootstrap.sh
+          subPath: debezium-bootstrap.sh
+          readOnly: false
+
+      resources:
+        limits:
+          cpu: 50m
+          memory: 64Mi
+
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile:
+          type: RuntimeDefault
+
+      affinity: {}
+
+      tolerations: []
+
+  extraManifests: []

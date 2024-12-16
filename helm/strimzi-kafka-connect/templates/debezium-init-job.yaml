@@ -1,0 +1,64 @@
+{{- with .Values.externalConfig.debeziumConfig.initJob }}
+{{- if .enabled }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Release.Name }}-debezium-init-job
+{{- with merge .extraLabels $.Values.commonLabels }}
+  labels: {{- tpl ( toYaml . ) $ | nindent 8 }}
+{{- end }}
+{{- if $.Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml $.Values.commonAnnotations ) $ | nindent 8 }}
+{{- end }}
+spec:
+  ttlSecondsAfterFinished: {{ .ttlSecondsAfterFinished | default 60 }}
+  backoffLimit: {{ .backoffLimit | default 0 }}
+  template:
+    metadata:
+    {{- with merge .extraLabels $.Values.commonLabels }}
+      labels: {{- tpl ( toYaml . ) $ | nindent 8 }}
+    {{- end }}
+    {{- if $.Values.commonAnnotations }}
+      annotations: {{- tpl ( toYaml $.Values.commonAnnotations ) $ | nindent 8 }}
+    {{- end }}
+    spec:
+      restartPolicy: {{ tpl .restartPolicy $ | default "Never" }}
+      {{- if .imagePullSecrets }}
+      imagePullSecrets: {{- tpl ( toYaml .imagePullSecrets ) $ | nindent 8 }}
+      {{- end }}
+      {{- if .priorityClassName }}
+      priorityClassName: {{ tpl .priorityClassName $ }}
+      {{- end }}
+      {{- if .affinity }}
+      affinity: {{- tpl ( toYaml .affinity ) $ | nindent 8 }}
+      {{- end }}
+      {{- if .tolerations }}
+      tolerations: {{- tpl ( toYaml .tolerations ) $ | nindent 8 }}
+      {{- end }}
+      {{- if .extraVolumes }}
+      volumes: {{- tpl ( toYaml .extraVolumes ) $ | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: debezium-init
+          image:  {{ tpl .image.registry $ }}/{{ tpl .image.repository $ }}:{{ tpl .image.tag $ }}
+          imagePullPolicy: {{ tpl .image.imagePullPolicy $ }}
+          command: {{- tpl ( toYaml .command ) $ | nindent 12 }}
+          {{- if .args }}
+          args: {{- tpl ( toYaml .args ) $ | nindent 12 }}
+          {{- end }}
+          {{- if .securityContext }}
+          securityContext: {{- tpl ( toYaml .securityContext ) $ | nindent 12 }}
+          {{- end }}
+          {{- if .resources }}
+          resources: {{- tpl ( toYaml .resources ) $ | nindent 12 }}
+          {{- end }}
+          {{- if .extraEnv }}
+          env: {{- tpl ( toYaml .extraEnv ) $ | nindent 12 }}
+          {{- end }}
+          {{- if .extraVolumeMounts }}
+          volumeMounts: {{- tpl ( toYaml .extraVolumeMounts ) $ | nindent 12 }}
+          {{- end }}
+  {{- end }}
+{{- end }}

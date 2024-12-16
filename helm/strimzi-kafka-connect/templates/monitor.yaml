@@ -1,0 +1,24 @@
+{{- if and .Values.strimziConfig.metricsConfig.enabled .Values.externalConfig.podMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ print ( tpl .Values.strimziConfig.connectClusterName $ ) "-pod-monitor"  | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+  namespace: {{ tpl .Values.externalConfig.podMonitor.namespace $ }}
+{{- with merge .Values.externalConfig.podMonitor.extraLabels .Values.commonLabels }}
+  labels: {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+{{- if .Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml .Values.commonAnnotations ) $ | nindent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      strimzi.io/cluster: {{ tpl .Values.strimziConfig.connectClusterName $ }}
+      strimzi.io/kind: KafkaConnect
+      strimzi.io/component-type: kafka-connect
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  podMetricsEndpoints: {{- toYaml .Values.externalConfig.podMonitor.metricsEndpoints | nindent 4 }}
+{{- end }}

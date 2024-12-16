@@ -1,0 +1,54 @@
+{{- range $kind, $connector := omit .Values.connectorConfig "common" }}
+{{- range $connector.instances }}
+{{- $connectorName := .name }}
+{{- $commonSpec := $.Values.connectorConfig.common.spec }}
+{{- $connectorSpec := $connector.spec }}
+{{- $instanceSpec := .spec }}
+{{- $commonConfig := $.Values.connectorConfig.common.config }}
+{{- $connectorConfig := $connector.config }}
+{{- $instanceConfig := .config }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: {{ tpl $connectorName $ | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+  namespace: {{ $.Release.Namespace }}
+{{- $strimziClusterLabel := dict "strimzi.io/cluster" ( tpl $.Values.strimziConfig.connectClusterName $ ) }}
+{{- with merge $strimziClusterLabel $.Values.commonLabels }}
+  labels: {{- tpl ( toYaml . ) $ | nindent 4 }}
+{{- end }}
+{{- if $.Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml $.Values.commonAnnotations ) $ | nindent 4 }}
+{{- end }}
+spec:
+{{- with merge $instanceSpec $connectorSpec $commonSpec }}
+  state: {{ .state }}
+  class: {{ .class }}
+  tasksMax: {{ .tasksMax }}
+  autoRestart:
+    enabled: {{ .autoRestart }}
+    {{- if .maxRestarts | empty | not }}
+    maxRestarts: {{ .maxRestarts }}
+    {{- end }}
+  {{- if .listOffsets.enabled }}
+  listOffsets:
+    toConfigMap:
+      name: {{ tpl ( .listOffsets.configMapName | default ( print $connectorName "-offsets" )) $ | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+  {{- end }}
+  {{- if .alterOffsets.enabled }}
+  alterOffsets:
+    fromConfigMap:
+      name: {{ tpl ( .listOffsets.configMapName | default ( print $connectorName "-alter-offsets" )) $ | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+  {{- end }}
+{{- end }}
+  config:
+  {{- with merge $instanceConfig $connectorConfig $commonConfig }}
+    {{- if eq $kind "debezium" }}
+      {{- template "debezium.connector" ( dict "name" $connectorName "mainContext" $ "instanceContext" . ) -}}
+    {{- else }}
+      {{/* insert here some another connector template */}}
+    {{- end }}
+    {{- tpl ( toYaml . ) $ | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,57 @@
+{{- if and .Values.externalConfig.rbac.enabled .Values.externalConfig.rbac.rules }}
+{{- $serviceAccountName := print ( tpl .Values.strimziConfig.connectClusterName $ ) "-connect" }}
+{{- $roleName := print $serviceAccountName "-role" | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+{{- $roleBindingName := print $serviceAccountName "-role-binding" | trunc 63 | trimSuffix "-" | trimSuffix "." }}
+{{- $scope := default "namespaced" .Values.externalConfig.rbac.scope }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+{{- if eq "namespaced" $scope }}
+kind: Role
+{{- else if eq "cluster" $scope }}
+kind: ClusterRole
+{{- else }}
+  {{- fail ".Values.rbac.scope should only be one of: namespaced / cluster" }}
+{{- end }}
+metadata:
+  name: {{ $roleName }}
+{{- if .Values.commonLabels }}
+  labels: {{- tpl ( toYaml .Values.commonLabels ) $ | nindent 4 }}
+{{- end }}
+{{- if .Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml .Values.commonAnnotations ) $ | nindent 4 }}
+{{- end }}
+rules: {{- tpl ( toYaml .Values.externalConfig.rbac.rules ) $ | nindent 2 }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+{{- if eq "namespaced" $scope }}
+kind: RoleBinding
+{{- else if eq "cluster" $scope }}
+kind: ClusterRoleBinding
+{{- else }}
+  {{- fail ".Values.rbac.scope should only be one of: namespaced / cluster" }}
+{{- end }}
+metadata:
+  name: {{ $roleBindingName }}
+{{- if .Values.commonLabels }}
+  labels: {{- tpl ( toYaml .Values.commonLabels ) $ | nindent 4 }}
+{{- end }}
+{{- if .Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml .Values.commonAnnotations ) $ | nindent 4 }}
+{{- end }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $serviceAccountName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  {{- if eq "namespaced" $scope }}
+  kind: Role
+  {{- else if eq "cluster" $scope }}
+  kind: ClusterRole
+  {{- else }}
+    {{- fail ".Values.rbac.scope should only be one of: namespaced / cluster" }}
+  {{- end }}
+  name: {{ $roleName }}
+
+{{- end }}

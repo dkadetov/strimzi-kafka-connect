@@ -1,0 +1,26 @@
+{{- if .Values.externalConfig.configMap.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl .Values.externalConfig.configMap.name $ | trunc 63 | trimSuffix "-" | trimSuffix "." | quote }}
+  namespace: {{ .Release.Namespace }}
+{{- if .Values.commonLabels }}
+  labels: {{- tpl ( toYaml .Values.commonLabels ) $ | nindent 4 }}
+{{- end }}
+{{- if .Values.commonAnnotations }}
+  annotations: {{- tpl ( toYaml .Values.commonAnnotations ) $ | nindent 4 }}
+{{- end }}
+data:
+  {{- range $key, $value := .Values.externalConfig.configMap.content }}
+   {{- if $value }}
+    {{- if or ( kindIs "float64" $value ) ( kindIs "int" $value ) }}
+      {{- tpl $key $ | nindent 2 }}: {{ $value | toString }}
+    {{- else if and ( kindIs "string" $value ) ( not ( regexMatch ".*\\{\\{.*\\}\\}.*" $value ) ) }}
+      {{- tpl $key $ | nindent 2 }}: {{- tpl ( $value | toYaml ) $ | indent 2 }}
+    {{- else }}
+      {{- tpl $key $ | nindent 2 }}: |- {{- tpl ( $value | toYaml ) $ | trimAll "'" | nindent 4 }}
+    {{- end }}
+   {{- end }}
+  {{- end }}
+{{- end }}
