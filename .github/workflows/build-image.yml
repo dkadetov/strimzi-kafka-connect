@@ -39,12 +39,17 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: type=semver,pattern=v{{version}}
 
-      - name: Get Strimzi image tag
-        id: strimzi_image_tag
+      - name: Extract metadata for Helm
+        id: meta_extra
         shell: bash
         run: |
           strimziImageTag=$(grep 'STRIMZI_VERSION=' Dockerfile | cut -d '=' -f2)
-          echo "::set-output name=tag::$strimziImageTag"
+          customImageTag=$(echo -e "${{ steps.meta.outputs.tags }}" | grep -E "^v.*$")
+          chartName=$(echo "${{ github.repository }}" | cut -d '/' -f2)
+
+          echo "strimzi_tag=$strimziImageTag" >> $GITHUB_OUTPUT
+          echo "custom_tag=$customImageTag" >> $GITHUB_OUTPUT
+          echo "chart_name=$chartName" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -54,7 +59,7 @@ jobs:
           push: true
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.strimzi_image_tag.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta_extra.outputs.strimzi_tag }}
             ${{ steps.meta.outputs.tags }}
 
       - name: Install Helm
@@ -63,19 +68,20 @@ jobs:
       - name: Patch Docker image tag
         uses: rkretzschmar/patch-yaml-inside-yaml@v3
         with:
-          documentFile: ./helm/${{ github.repository }}values.yaml
+          documentFile: ./helm/${{ steps.meta_extra.outputs.chart_name }}/values.yaml
           yamlPath: deploymentConfig.image.tag
-          newValue: ${{ steps.strimzi_image_tag.outputs.tag }}
+          newValue: ${{ steps.meta_extra.outputs.custom_tag }}
 
       - name: Publish Helm Chart
         shell: bash
+        working-directory: ./helm/${{ steps.meta_extra.outputs.chart_name }}
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login $REPO --username ${{ github.actor }} --password-stdin
-          cd ./helm/${{ github.repository }}
-          TAG=$(echo -e "${{ steps.meta.outputs.tags }}" | grep -E "^v.*$" | cut -c2-)
           helm lint .
           helm package . --version $TAG
-          helm show chart ${{ github.repository }}-$TAG.tgz
-          helm push ${{ github.repository }}-$TAG.tgz oci://$REPO
+          helm show chart $CHART-$TAG.tgz
+          helm push $CHART-$TAG.tgz oci://$REPO
         env:
-          REPO: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          CHART: ${{ steps.meta_extra.outputs.chart_name }}
+          REPO: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+          TAG: ${{ github.ref_name }}
