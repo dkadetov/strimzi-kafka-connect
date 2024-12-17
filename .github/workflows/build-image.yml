@@ -44,12 +44,10 @@ jobs:
         shell: bash
         run: |
           strimziImageTag=$(grep 'STRIMZI_VERSION=' Dockerfile | cut -d '=' -f2)
-          customImageTag=$(echo -e "${{ steps.meta.outputs.tags }}" | grep -E "^v.*$")
           chartName=$(echo "${{ github.repository }}" | cut -d '/' -f2)
 
-          echo "strimzi_tag=$strimziImageTag" >> $GITHUB_OUTPUT
-          echo "custom_tag=$customImageTag" >> $GITHUB_OUTPUT
-          echo "chart_name=$chartName" >> $GITHUB_OUTPUT
+          echo strimzi_tag=$strimziImageTag >> $GITHUB_OUTPUT
+          echo chart_name=$chartName >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -70,7 +68,7 @@ jobs:
         with:
           documentFile: ./helm/${{ steps.meta_extra.outputs.chart_name }}/values.yaml
           yamlPath: deploymentConfig.image.tag
-          newValue: ${{ steps.meta_extra.outputs.custom_tag }}
+          newValue: ${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
 
       - name: Publish Helm Chart
         shell: bash
