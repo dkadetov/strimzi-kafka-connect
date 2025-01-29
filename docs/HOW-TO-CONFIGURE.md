@@ -5,22 +5,22 @@
 
 **Table of Contents**
 - [Helm Chart Structure](#helm-chart-structure)
-  - [`clusterOperator`](#⦿-clusteroperator)
-  - [`commonLabels`](#⦿-commonlabels)
-  - [`commonAnnotations`](#⦿-commonannotations)
-  - [`strimziConfig`](#⦿-strimziconfig)
-    - [`strimziConfig.metricsConfig`](#‣-metricsconfig)
-    - [`strimziConfig.loggingConfig`](#‣-loggingconfig)
-    - [`strimziConfig.tracingConfig`](#‣-tracingconfig)
-  - [`deploymentConfig`](#⦿-deploymentconfig)
-  - [`connectConfig`](#⦿-connectconfig)
-  - [`externalConfig`](#⦿-externalconfig)
-    - [`rbac`](#‣-rbac)
-    - [`podMonitor`](#‣-podmonitor)
-    - [`configMap`](#‣-configmap)
-    - [`secret`](#‣-secret)
-    - [`debeziumConfig`](#‣-debeziumconfig)
-    - [`extraManifests`](#‣-extramanifests)
+  - [`clusterOperator`](#-clusteroperator)
+  - [`commonLabels`](#-commonlabels)
+  - [`commonAnnotations`](#-commonannotations)
+  - [`strimziConfig`](#-strimziconfig)
+    - [`strimziConfig.metricsConfig`](#-metricsconfig)
+    - [`strimziConfig.loggingConfig`](#-loggingconfig)
+    - [`strimziConfig.tracingConfig`](#-tracingconfig)
+  - [`deploymentConfig`](#-deploymentconfig)
+  - [`connectConfig`](#-connectconfig)
+  - [`externalConfig`](#-externalconfig)
+    - [`rbac`](#-rbac)
+    - [`podMonitor`](#-podmonitor)
+    - [`configMap`](#-configmap)
+    - [`secret`](#-secret)
+    - [`debeziumConfig`](#-debeziumconfig)
+    - [`extraManifests`](#-extramanifests)
 - [Notes](#notes)
 - [Special Note on `tracingConfig`](#special-note-on-tracingconfig)
 
@@ -42,16 +42,16 @@ Below is the chart structure and only a few specific features.
 
 ## Helm Chart Structure
 
-| Parameter                                   | Description                                                                    |
-|---------------------------------------------|--------------------------------------------------------------------------------|
-| [`clusterOperator`](#⦿-clusteroperator)     | Optional inclusion and configuration of the child strimzi-kafka-operator chart |
-| [`commonLabels`](#⦿-commonlabels)           | Labels applied to all resources created by this chart                          |
-| [`commonAnnotations`](#⦿-commonannotations) | Annotations applied to all resources created by this chart                     |
-| [`strimziConfig`](#⦿-strimziconfig)         | Settings specific to the use of the Strimzi Operator                           |
-| [`deploymentConfig`](#⦿-deploymentconfig)   | Settings directly related to the deployment                                    |
-| [`connectConfig`](#⦿-connectconfig)         | Settings specific to Kafka Connect                                             |
-| [`connectorConfig`](#⦿-connectorconfig)     | Settings specific to Kafka Connector                                           |
-| [`externalConfig`](#⦿-externalconfig)       | Settings related to additional resources created by this chart                 |
+| Parameter                                  | Description                                                                    |
+|--------------------------------------------|--------------------------------------------------------------------------------|
+| [`clusterOperator`](#-clusteroperator)     | Optional inclusion and configuration of the child strimzi-kafka-operator chart |
+| [`commonLabels`](#-commonlabels)           | Labels applied to all resources created by this chart                          |
+| [`commonAnnotations`](#-commonannotations) | Annotations applied to all resources created by this chart                     |
+| [`strimziConfig`](#-strimziconfig)         | Settings specific to the use of the Strimzi Operator                           |
+| [`deploymentConfig`](#-deploymentconfig)   | Settings directly related to the deployment                                    |
+| [`connectConfig`](#-connectconfig)         | Settings specific to Kafka Connect                                             |
+| [`connectorConfig`](#-connectorconfig)     | Settings specific to Kafka Connector                                           |
+| [`externalConfig`](#-externalconfig)       | Settings related to additional resources created by this chart                 |
 
 ### ⦿ clusterOperator
 
@@ -81,14 +81,14 @@ It is recommended to refer to the Strimzi documentation for a detailed explanati
 
 Only the most important parameters are listed here.
 
-| Parameter                                                         | Description                                                      |
-|-------------------------------------------------------------------|------------------------------------------------------------------|
-| [`strimziConfig.useConnectorResources`](#‣-useconnectorresources) | Adds the corresponding annotation to the `KafkaConnect` resource |
-| `strimziConfig.bootstrapServers`                                  | Kafka Broker address                                             |
-| `strimziConfig.schemaRegistry`                                    | Schema Registry address (if used)                                |
-| [`strimziConfig.metricsConfig`](#‣-metricsconfig)                 | Parameters for the Prometheus JMX exporter metrics               |
-| [`strimziConfig.loggingConfig`](#‣-loggingconfig)                 | Logging parameters                                               |
-| [`strimziConfig.tracingConfig`](#‣-tracingconfig)                 | Tracing parameters                                               |
+| Parameter                                                        | Description                                                      |
+|------------------------------------------------------------------|------------------------------------------------------------------|
+| [`strimziConfig.useConnectorResources`](#-useconnectorresources) | Adds the corresponding annotation to the `KafkaConnect` resource |
+| `strimziConfig.bootstrapServers`                                 | Kafka Broker address                                             |
+| `strimziConfig.schemaRegistry`                                   | Schema Registry address (if used)                                |
+| [`strimziConfig.metricsConfig`](#-metricsconfig)                 | Parameters for the Prometheus JMX exporter metrics               |
+| [`strimziConfig.loggingConfig`](#-loggingconfig)                 | Logging parameters                                               |
+| [`strimziConfig.tracingConfig`](#-tracingconfig)                 | Tracing parameters                                               |
 
 #### ‣ useConnectorResources
 
