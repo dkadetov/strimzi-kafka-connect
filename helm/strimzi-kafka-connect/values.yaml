@@ -385,8 +385,7 @@ externalConfig:
     metricsEndpoints:
       - port: tcp-prometheus
         path: /metrics
-        interval: 60s
-        scrapeInterval: 30s
+        interval: 30s
         scrapeTimeout: 15s
         relabelings:
           - action: labelmap
