@@ -63,7 +63,7 @@ strimziConfig:
   annotations: {}
 
   version: '{{ .Chart.AppVersion }}'
-  
+
   connectClusterName: '{{ .Release.Name }}-kafka-connect'
 
   useConnectorResources: true

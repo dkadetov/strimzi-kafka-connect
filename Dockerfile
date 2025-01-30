@@ -6,7 +6,7 @@ ARG CONNECT_JSON_SCHEMA_CONVERTER_VERSION=7.8.0
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.46.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
 ARG OTEL_EXP_ZIPKIN_VERSION=1.46.0
-ARG KUBECTL_VERSION=1.31.0
+ARG KUBECTL_VERSION=1.31.5
 
 # Install confluent avro converter & debezium connector
 FROM confluentinc/cp-kafka-connect:${CONFLUENT_VERSION} as cp
@@ -55,7 +55,7 @@ RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium; \
          -o /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar && \
     chmod 644 /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar; \
     # Add kubectl
-    curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    curl -L https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
          -o /bin/kubectl && \
     chmod 755 /bin/kubectl;
 
