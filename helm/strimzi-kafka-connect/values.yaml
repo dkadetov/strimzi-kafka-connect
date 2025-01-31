@@ -379,7 +379,7 @@ externalConfig:
     rules: []
 
   podMonitor:
-    enabled: true
+    enabled: false
     extraLabels: {}
     namespace: '{{ .Release.Namespace }}'
     metricsEndpoints:

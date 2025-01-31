@@ -430,7 +430,7 @@ externalConfig:
   rbac:
     enabled: true
     rules:
-      - apiGroups: ["core"]
+      - apiGroups: [""]
         resources: ["pods", "pods/status"]
         verbs: ["get", "list", "watch"]
 ```
