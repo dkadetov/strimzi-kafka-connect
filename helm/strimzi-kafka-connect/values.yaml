@@ -63,7 +63,7 @@ strimziConfig:
   annotations: {}
 
   version: '{{ .Chart.AppVersion }}'
-  
+
   connectClusterName: '{{ .Release.Name }}-kafka-connect'
 
   useConnectorResources: true
@@ -358,19 +358,25 @@ connectorConfig:
       slot.name: '' # by default: connectorConfig.debezium.instances[*].name
       slot.max.retries: 6
       slot.retry.delay.ms: 10000
-      transforms: RemoveString,ActivateTracingSpan
+      transforms: RemoveString
       transforms.RemoveString.type: org.apache.kafka.connect.transforms.RegexRouter
       transforms.RemoveString.regex: (.*)\.(public|debezium)\.(.*) # list all the schemas you use
       transforms.RemoveString.replacement: '$1-connect.__db_name_placeholder__.$3'
-      transforms.ActivateTracingSpan.type: io.debezium.transforms.tracing.ActivateTracingSpan
-      transforms.ActivateTracingSpan.tracing.operation.name: debezium-read
-      transforms.ActivateTracingSpan.tracing.span.context.field: tracingspancontext
-      transforms.ActivateTracingSpan.tracing.with.context.field.only: false
-      transforms.ActivateTracingSpan.negate: true
-      transforms.ActivateTracingSpan.predicate: debeziumHeartbeat
-      predicates: debeziumHeartbeat
-      predicates.debeziumHeartbeat.type: org.apache.kafka.connect.transforms.predicates.TopicNameMatches
-      predicates.debeziumHeartbeat.pattern: .*debezium_signal|.*-debezium-.*-heartbeat\..*
+
+## It seems to work only with debezium-interceptor: https://mvnrepository.com/artifact/io.debezium/debezium-interceptor
+## But Strimzi Operator does not allow to set this parameter https://strimzi.io/docs/operators/latest/configuring#type-KafkaConnectSpec-reference
+## It should have value: producer.interceptor.classes=io.debezium.tracing.DebeziumTracingProducerInterceptor
+## https://debezium.io/documentation/reference/stable/integrations/tracing.html
+## https://github.com/debezium/debezium-examples/blob/main/outbox/debezium-strimzi/Dockerfile
+#      transforms.TracingSpan.type: io.debezium.transforms.tracing.ActivateTracingSpan
+#      transforms.TracingSpan.tracing.operation.name: debezium-read
+#      transforms.TracingSpan.tracing.span.context.field: tracingspancontext
+#      transforms.TracingSpan.tracing.with.context.field.only: false
+#      transforms.TracingSpan.negate: true
+#      transforms.TracingSpan.predicate: debeziumHeartbeat
+#      predicates: debeziumHeartbeat
+#      predicates.debeziumHeartbeat.type: org.apache.kafka.connect.transforms.predicates.TopicNameMatches
+#      predicates.debeziumHeartbeat.pattern: .*debezium_signal|.*-debezium-.*-heartbeat\..*
 
 externalConfig:
   rbac:
@@ -379,14 +385,13 @@ externalConfig:
     rules: []
 
   podMonitor:
-    enabled: true
+    enabled: false
     extraLabels: {}
     namespace: '{{ .Release.Namespace }}'
     metricsEndpoints:
       - port: tcp-prometheus
         path: /metrics
-        interval: 60s
-        scrapeInterval: 30s
+        interval: 30s
         scrapeTimeout: 15s
         relabelings:
           - action: labelmap

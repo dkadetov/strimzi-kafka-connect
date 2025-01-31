@@ -6,7 +6,7 @@ ARG CONNECT_JSON_SCHEMA_CONVERTER_VERSION=7.8.0
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.46.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
 ARG OTEL_EXP_ZIPKIN_VERSION=1.46.0
-ARG KUBECTL_VERSION=1.31.0
+ARG KUBECTL_VERSION=1.31.5
 
 # Install confluent avro converter & debezium connector
 FROM confluentinc/cp-kafka-connect:${CONFLUENT_VERSION} as cp
@@ -34,7 +34,9 @@ ARG KUBECTL_VERSION
 
 USER root:root
 
-RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium; \
+RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium && \
+    chmod 755 /opt/kafka/plugins/debezium && \
+    chown 1001:1001 /opt/kafka/plugins/debezium && \
     # Fetch debezium-connector-postgres artifact
     curl -L https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/${DEBEZIUM_VERSION}.Final/debezium-connector-postgres-${DEBEZIUM_VERSION}.Final-plugin.tar.gz \
          -o /tmp/debezium/debezium-connector-postgres.tar.gz && \
@@ -55,7 +57,7 @@ RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium; \
          -o /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar && \
     chmod 644 /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar; \
     # Add kubectl
-    curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    curl -L https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
          -o /bin/kubectl && \
     chmod 755 /bin/kubectl;
 
