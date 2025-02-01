@@ -306,7 +306,7 @@ The `debezium_signal` table is required when using Debezium signals and is creat
 
 #### ‣ extraManifests
 
-This section can contain any other custom Kubernetes manifests (e.g., `ExternalSecret` - see an example in `values-test.yaml`)
+This section can contain any other custom Kubernetes manifests (e.g., `ExternalSecret` - see an example in [values-test.yaml](/helm/values-test.yaml))
 
 ---
 
@@ -343,14 +343,14 @@ This section can contain any other custom Kubernetes manifests (e.g., `ExternalS
 - `namespace` is an alias for `topic.prefix` with higher priority.
 - There are two approaches to declaring tables that require replication (the second has a higher priority):
 
-  ① When all produced Kafka topics belong to a single group in `topic.creation.groups`, the `topic.creation.compacted.include` is generated automatically.
+  ① When all produced Kafka topics belong to the same group in `topic.creation.groups`, the `topic.creation.compacted.include` is generated automatically.
 
     ```yaml
         table.include.list: public.lo, public.li
         topic.creation.group: compacted
     ```
 
-  ② When **not** all produced Kafka topics belong to a single group in `topic.creation.groups`, the `table.include.list` is generated automatically.
+  ② When **not** all produced Kafka topics belong to the same group in `topic.creation.groups`, the `table.include.list` is generated automatically.
 
     ```yaml
         topic.creation.compacted.include: public.lo, public.li
