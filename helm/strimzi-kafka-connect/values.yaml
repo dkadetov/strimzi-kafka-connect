@@ -463,7 +463,8 @@ externalConfig:
         - 'bash'
 
       args:
-        - '/debezium-bootstrap.sh'
+        - '-c'
+        - 'source /debezium-bootstrap.sh'
 
       extraLabels: {}
 
@@ -502,7 +503,7 @@ externalConfig:
         - name: debezium-config
           mountPath: /debezium-bootstrap.sh
           subPath: debezium-bootstrap.sh
-          readOnly: false
+          readOnly: true
 
       resources:
         limits:

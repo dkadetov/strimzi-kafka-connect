@@ -69,6 +69,8 @@
         {{- $regex = . | trimPrefix ( regexFind ".*\\." . ) | print $topicPrefix "-connect." $databaseName "." | replace "." "\\." | list $regex | join "|" | trimAll "|" | trim }}
       {{- end }}
       {{- $_ := set . ( print "topic.creation." $topicCreationGroup ".include" ) $regex }}
+    {{- else }}
+      {{- $_ := set . "table.include.list" $tableIncludeList }}
     {{- end }}
   
     {{- if index . "transforms.RemoveString.replacement" | empty | not }}

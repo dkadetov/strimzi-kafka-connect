@@ -35,8 +35,7 @@ ARG KUBECTL_VERSION
 USER root:root
 
 RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium && \
-    chmod 755 /opt/kafka/plugins/debezium && \
-    chown 1001:1001 /opt/kafka/plugins/debezium && \
+    chmod 755 /opt/kafka/plugins/debezium; \
     # Fetch debezium-connector-postgres artifact
     curl -L https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/${DEBEZIUM_VERSION}.Final/debezium-connector-postgres-${DEBEZIUM_VERSION}.Final-plugin.tar.gz \
          -o /tmp/debezium/debezium-connector-postgres.tar.gz && \
@@ -66,5 +65,8 @@ COPY --from=cp /tmp/kafka/plugins /opt/kafka/plugins/
 
 # Override to implement OTEL_EXPORTER_OTLP_AGENT_ENDPOINT support
 COPY --chmod=755 scripts/kafka_connect_run.sh /opt/kafka/
+
+# Grant permissions to 1001 user
+RUN chown -R 1001:1001 /opt/kafka/plugins;
 
 USER 1001
