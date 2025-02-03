@@ -32,7 +32,7 @@ That said, there is nothing preventing you from adding other connectors as neede
 The project also includes:
 - Dockerfile containing a basic example for building an image with the necessary plugins.
 - [Documentation](docs) briefly describing the configuration capabilities of the chart and working with connectors:
-  - [Links to official documentation](docs/HOW-TO-LINKS.md)
+  - [External references to official documentation](docs/HOW-TO-LINKS.md)
   - [Brief instructions on how to configure the Helm Chart](docs/HOW-TO-CONFIGURE.md)
   - [Brief instructions on how to work with Strimzi Kafka Connect resources](docs/HOW-TO-STRIMZI.md)
   - [Brief instructions on how to work with Debezium PostgreSQL Connector](docs/HOW-TO-DEBEZIUM.md)

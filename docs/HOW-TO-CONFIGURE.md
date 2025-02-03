@@ -1,26 +1,26 @@
 
-# Brief instructions on how to configure the Helm Chart
-
----
+<h1 id="top">Brief instructions on how to configure the Helm Chart</h1>
 
 **Table of Contents**
 - [Helm Chart Structure](#helm-chart-structure)
-  - [`clusterOperator`](#-clusteroperator)
-  - [`commonLabels`](#-commonlabels)
-  - [`commonAnnotations`](#-commonannotations)
-  - [`strimziConfig`](#-strimziconfig)
-    - [`strimziConfig.metricsConfig`](#-metricsconfig)
-    - [`strimziConfig.loggingConfig`](#-loggingconfig)
-    - [`strimziConfig.tracingConfig`](#-tracingconfig)
-  - [`deploymentConfig`](#-deploymentconfig)
-  - [`connectConfig`](#-connectconfig)
-  - [`externalConfig`](#-externalconfig)
-    - [`rbac`](#-rbac)
-    - [`podMonitor`](#-podmonitor)
-    - [`configMap`](#-configmap)
-    - [`secret`](#-secret)
-    - [`debeziumConfig`](#-debeziumconfig)
-    - [`extraManifests`](#-extramanifests)
+  - [`clusterOperator`](#cluster-operator)
+  - [`commonLabels`](#common-labels)
+  - [`commonAnnotations`](#common-annotations)
+  - [`strimziConfig`](#strimzi-config)
+    - [`useConnectorResources`](#use-connector-resources)
+    - [`metricsConfig`](#metrics-config)
+    - [`loggingConfig`](#logging-config)
+    - [`tracingConfig`](#tracing-config)
+  - [`deploymentConfig`](#deployment-config)
+  - [`connectConfig`](#connect-config)
+  - [`connectorConfig`](#connector-config)
+  - [`externalConfig`](#external-config)
+    - [`rbac`](#rbac)
+    - [`podMonitor`](#pod-monitor)
+    - [`configMap`](#config-map)
+    - [`secret`](#secret)
+    - [`debeziumConfig`](#debezium-config)
+    - [`extraManifests`](#extra-manifests)
 - [Notes](#notes)
 - [Special Note on `tracingConfig`](#special-note-on-tracingconfig)
 
@@ -40,7 +40,7 @@ It is highly recommended to start by reviewing the documentation at:
 
 Below is the chart structure and only a few specific features.
 
-## Helm Chart Structure
+<h2 id="helm-chart-structure">Helm Chart Structure</h2>
 
 | Parameter                                  | Description                                                                    |
 |--------------------------------------------|--------------------------------------------------------------------------------|
@@ -53,7 +53,7 @@ Below is the chart structure and only a few specific features.
 | [`connectorConfig`](#-connectorconfig)     | Settings specific to Kafka Connector                                           |
 | [`externalConfig`](#-externalconfig)       | Settings related to additional resources created by this chart                 |
 
-### ⦿ clusterOperator
+<h3 id="cluster-operator">⦿ clusterOperator</h3>
 
 Since using this chart requires the installation of the Strimzi Cluster Operator, it is included as a dependency in the form of a child chart.
 
@@ -61,19 +61,19 @@ By default, the installation of the Strimzi Cluster Operator is not enabled.
 
 Please note that some settings have been modified compared to the original and are for demonstration purposes.
 
-### ⦿ commonLabels
+<h3 id="common-labels">⦿ commonLabels</h3>
 
 All resources created by this chart will include the labels listed here.
 
 However, this does not apply to resources created by the Strimzi Operator.
 
-### ⦿ commonAnnotations
+<h3 id="common-annotations">⦿ commonAnnotations</h3>
 
 All resources created by this chart will include the annotations listed here.
 
 However, this does not apply to resources created by the Strimzi Operator.
 
-### ⦿ strimziConfig
+<h3 id="strimzi-config">⦿ strimziConfig</h3>
 
 This section contains settings specific to the use of the Strimzi Operator.
 
@@ -90,18 +90,16 @@ Only the most important parameters are listed here.
 | [`strimziConfig.loggingConfig`](#-loggingconfig)                 | Logging parameters                                               |
 | [`strimziConfig.tracingConfig`](#-tracingconfig)                 | Tracing parameters                                               |
 
-#### ‣ useConnectorResources
+<h4 id="use-connector-resources">‣ useConnectorResources</h4>
 
 Refer to the documentation for details:
 
 - [Configuring Kafka Connect connectors](https://strimzi.io/docs/operators/latest/deploying#con-kafka-connector-config-str)
 - [Switching to using KafkaConnector custom resources](https://strimzi.io/docs/operators/latest/deploying#con-switching-api-to-kafka-connector-str)
 
-```text
-The strimzi.io/use-connector-resources annotation enables KafkaConnectors. If you applied the annotation to your KafkaConnect resource configuration, you need to remove it to use the Kafka Connect API. Otherwise, manual changes made directly using the Kafka Connect REST API are reverted by the Cluster Operator.
-```
+> The strimzi.io/use-connector-resources annotation enables KafkaConnectors. If you applied the annotation to your KafkaConnect resource configuration, you need to remove it to use the Kafka Connect API. Otherwise, manual changes made directly using the Kafka Connect REST API are reverted by the Cluster Operator.
 
-#### ‣ metricsConfig
+<h4 id="metrics-config">‣ metricsConfig</h4>
 
 | Parameter                                      | Description                                        |
 |------------------------------------------------|----------------------------------------------------|
@@ -110,7 +108,7 @@ The strimzi.io/use-connector-resources annotation enables KafkaConnectors. If yo
 | `metricsConfig.strimziRules`                   | Activates the original Strimzi Kafka Connect rules |
 | `metricsConfig.valueFrom.configMapKeyRef.name` | Specifies a ConfigMap containing custom rules      |
 
-#### ‣ loggingConfig
+<h4 id="logging-config">‣ loggingConfig</h4>
 
 [Refer to the documentation for details](https://strimzi.io/docs/operators/latest/configuring.html#property-kafka-connect-logging-reference)
 
@@ -136,7 +134,7 @@ strimziConfig:
         key: loggingConfig
 ```
 
-#### ‣ tracingConfig
+<h4 id="tracing-config">‣ tracingConfig</h4>
 
 By default, tracing is disabled.
 
@@ -151,7 +149,7 @@ The `values.yaml` file provides examples of possible parameters, so we won’t r
 
 However, it is worth noting that all the parameters listed in this section ultimately populate the `deploymentConfig.extraEnv` section.
 
-### ⦿ deploymentConfig
+<h3 id="deployment-config">⦿ deploymentConfig</h3>
 
 This section contains parameters directly related to the deployment.
 
@@ -163,7 +161,7 @@ Key specific parameters to note:
 - `extraEnv`: Contains Debezium-specific credential configuration, such as `DEBEZIUM_PG_USER` and `DEBEZIUM_PG_PASS` 
 - `extraVolumes` and `extraVolumeMounts`: Contain configurations declared in `externalConfig.configMap`
 
-### ⦿ connectConfig
+<h3 id="connect-config">⦿ connectConfig</h3>
 
 This section contains parameters specific to Kafka Connect.
 
@@ -173,7 +171,7 @@ It is recommended to review the following documentation:
 
 However, keep in mind that there are Strimzi Operator limitations. Refer to [Exceptions](https://strimzi.io/docs/operators/latest/configuring#type-KafkaConnectSpec-reference) for details.
 
-### ⦿ connectorConfig
+<h3 id="connector-config">⦿ connectorConfig</h3>
 
 This section contains parameters specific to Kafka Connectors.
 
@@ -226,11 +224,11 @@ If needed, create a template similar to `_debezium.tpl` and integrate it into th
 ...
 ```
 
-### ⦿ externalConfig
+<h3 id="external-config">⦿ externalConfig</h3>
 
 This section contains settings related to additional resources created by this chart.
 
-#### ‣ rbac
+<h4 id="rbac">‣ rbac</h4>
 
 This section is responsible for generating `Role`/`ClusterRole` and `RoleBinding`/`ClusterRoleBinding` manifests to provide additional privileges to the default service account: `{{ .Values.strimziConfig.connectClusterName }}-connect`
 
@@ -240,7 +238,7 @@ This section is responsible for generating `Role`/`ClusterRole` and `RoleBinding
 | `rbac.scope`   | Scope of privileges `[namespaced, cluster]` |
 | `rbac.rules`   | List of rules (see the tracing example)     |
 
-#### ‣ podMonitor
+<h4 id="pod-monitor">‣ podMonitor</h4>
 
 This section contains parameters related to integration with monitoring systems.
 
@@ -252,7 +250,7 @@ This section contains parameters related to integration with monitoring systems.
 | `podMonitor.metricsEndpoints` | List of endpoints                                        |
 
 
-#### ‣ configMap
+<h4 id="config-map">‣ configMap</h4>
 
 This section contains settings related to Debezium configuration as well as other settings.
 
@@ -271,7 +269,7 @@ This content will be included in the generated ConfigMap with the corresponding 
 | `configMap.content.metricsConfig`            | Overrides the `jmxPrometheusExporter` configuration (also requires modifying the resource name for `strimziConfig.metricsConfig`)                                 |
 | `configMap.content.loggingConfig`            | Logging configuration, if you use `strimziConfig.loggingConfig.type: external`                                                                                    |
 
-#### ‣ secret
+<h4 id="secret">‣ secret</h4>
 
 This section is responsible for generating the Kubernetes Secret manifest.
 
@@ -286,7 +284,7 @@ It is used for:
 - `externalConfig.debeziumConfig.initJob.extraEnv["PGUSER"]`
 - `externalConfig.debeziumConfig.initJob.extraEnv["PGPASSWORD"]`
 
-#### ‣ debeziumConfig
+<h4 id="debezium-config">‣ debeziumConfig</h4>
 
 This section contains settings that describe the configuration of a Kubernetes job for creating service tables for Debezium.
 
@@ -304,13 +302,13 @@ The `debezium_heartbeat` table is used to send Debezium heartbeats and is create
 
 The `debezium_signal` table is required when using Debezium signals and is created if `connectorConfig.debezium.config["signal.enabled"]` is activated.
 
-#### ‣ extraManifests
+<h4 id="extra-manifests">‣ extraManifests</h4>
 
 This section can contain any other custom Kubernetes manifests (e.g., `ExternalSecret` - see an example in [values-test.yaml](/helm/values-test.yaml))
 
 ---
 
-## Notes
+<h2 id="notes">Notes</h2>
 
 - Everything described here only partially explains the parameters of `connectConfig` and `connectorConfig`. Refer to the official documentation for detailed descriptions.
 - Currently, the chart supports and has been tested only with one type of connector: Debezium PostgreSQL.
@@ -359,7 +357,7 @@ This section can contain any other custom Kubernetes manifests (e.g., `ExternalS
 
 ---
 
-## Special Note on `tracingConfig`
+<h2 id="special-note-on-tracingconfig">Special Note on `tracingConfig`</h2>
 
 There is an important detail regarding the use of the `opentelemetry` collector in `DaemonSet` mode.
 

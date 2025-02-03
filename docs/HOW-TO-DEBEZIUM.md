@@ -1,31 +1,30 @@
 
-# Brief instructions on how to work with Debezium PostgreSQL Connector
-
----
+<h1 id="top">Brief instructions on how to work with Debezium PostgreSQL Connector</h1>
 
 **Table of Contents**
 - [How to add new tables to an existing Kafka connector](#how-to-add-new-tables-to-an-existing-kafka-connector)
-  - [Step 1. Add new tables to the configuration and enable signals](#step-1.-add-new-tables-to-the-configuration-and-enable-signals)
-  - [Step 2. Trigger an incremental snapshot](#step-2.-trigger-an-incremental-snapshot)
-  - [Step 3. Check the data in the related Kafka topics](#step-3.-check-the-data-in-the-related-kafka-topics)
+  - [Step 1. Add new tables to the configuration and enable signals](#step-1-add-new-tables-to-the-configuration-and-enable-signals)
+  - [Step 2. Trigger an incremental snapshot](#step-2-trigger-an-incremental-snapshot)
+  - [Step 3. Check the data in the related Kafka topics](#step-3-check-the-data-in-the-related-kafka-topics)
 - [How to proceed if the replication slot is not working](#how-to-proceed-if-the-replication-slot-is-not-working)
 - [How to proceed in case of database schema changes](#how-to-proceed-in-case-of-database-schema-changes)
   - [The simplest case](#the-simplest-case)
   - [The most common case](#the-most-common-case)
+  - [Complicated case](#complicated-case)
   - [The most complex case](#the-most-complex-case)
-    - [Step 1: Clean up snapshot metrics](#step-1:-clean-up-snapshot-metrics)
-    - [Step 2: Lock the table and trigger the table snapshot](#step-2:-lock-the-table-and-trigger-the-table-snapshot)
-    - [Step 3: Wait until the snapshot is complete](#step-3:-wait-until-the-snapshot-is-complete)
-    - [Step 4: Release the table lock and start consumers](#step-4:-release-the-table-lock-and-start-consumers)
+    - [Step 1: Clean up snapshot metrics](#step-1-clean-up-snapshot-metrics)
+    - [Step 2: Lock the table and trigger the table snapshot](#step-2-lock-the-table-and-trigger-the-table-snapshot)
+    - [Step 3: Wait until the snapshot is complete](#step-3-wait-until-the-snapshot-is-complete)
+    - [Step 4: Release the table lock and start consumers](#step-4-release-the-table-lock-and-start-consumers)
     - [Example of automating actions](#example-of-automating-actions)
 
 ---
 
-## How to add new tables to an existing Kafka connector
+<h2 id="how-to-add-new-tables-to-an-existing-kafka-connector">How to add new tables to an existing Kafka connector</h2>
 
 Suppose we need to add the `host` and `notification` tables from the `events` database.
 
-### Step 1. Add new tables to the configuration and enable signals
+<h3 id="step-1-add-new-tables-to-the-configuration-and-enable-signals">Step 1. Add new tables to the configuration and enable signals</h3>
 
 Edit the `connectorConfig` configuration for the corresponding environment.
 
@@ -54,7 +53,7 @@ connectorConfig:
           topic.prefix: cloud
 ```
 
-### Step 2. Trigger an incremental snapshot
+<h3 id="step-2-trigger-an-incremental-snapshot">Step 2. Trigger an incremental snapshot</h3>
 
 Detailed explanation: See [Sending signals to a Debezium connector](./HOW-TO-LINKS.md#debezium-documentation)
 
@@ -66,7 +65,7 @@ INSERT INTO debezium.debezium_signal (id, type, data) VALUES (gen_random_uuid(),
 
 (*) Make sure the `pgcrypto` extension is installed for using `gen_random_uuid()` function.
 
-### Step 3. Check the data in the related Kafka topics
+<h3 id="step-3-check-the-data-in-the-related-kafka-topics">Step 3. Check the data in the related Kafka topics</h3>
 
 For the current example, the Kafka topic names will be: `cloud-connect.events.host` and `cloud-connect.events.notification`.
 
@@ -74,7 +73,7 @@ Note: If the table is empty, the Kafka topic will not be created. Kafka Connect 
 
 ---
 
-## How to proceed if the replication slot is not working
+<h2 id="how-to-proceed-if-the-replication-slot-is-not-working">How to proceed if the replication slot is not working</h2>
 
 Possible situations when the replication slot is not active or has a huge lag.
 
@@ -128,13 +127,13 @@ How to proceed in this case is described in the following section.
 
 ---
 
-## How to proceed in case of database schema changes
+<h2 id="how-to-proceed-in-case-of-database-schema-changes">How to proceed in case of database schema changes</h2>
 
 There are several scenarios.
 
 However, in all cases, we consider that consumers are ready for a change of scheme
 
-### The simplest case
+<h3 id="the-simplest-case">The simplest case</h3>
 
 First, the simplest one is when all consumers read a kafka topic only once and never need to reread it.
 
@@ -180,8 +179,7 @@ kubectl patch KafkaConnector <kafka_connector_name> --type 'merge' --patch '{"sp
 - start consumers
 - make sure that a consumer lag is 0
 
-
-### The most common case
+<h3 id="the-most-common-case">The most common case</h3>
 
 The one case when all consumers are able to reread all data from the topic without suffering any consequences.
 
@@ -197,8 +195,7 @@ This scenario is completely the same as the previous one, but in addition to it,
 INSERT INTO debezium.debezium_signal (id, type, data) VALUES (gen_random_uuid(), 'execute-snapshot', '{"data-collections": ["public.<table_name>"],"type": "incremental"}');
 ```
 
-
-### Complicated case
+<h3 id="complicated-case">Complicated case</h3>
 
 This scenario assumes that not all consumers are capable of re-reading data from the kafka topic.
 
@@ -216,8 +213,7 @@ If you have the ability to stop the data producer for the database (e.g. a maint
 - start the data producer
 - start consumers
 
-
-### The most complex case
+<h3 id="the-most-complex-case">The most complex case</h3>
 
 The input conditions are the same as in the previous case, but a maintenance break is **not** possible!
 
@@ -234,7 +230,7 @@ The order of operations is as follows:
 - release the table lock
 - start consumers again
 
-#### Step 1: Clean up snapshot metrics
+<h4 id="step-1-clean-up-snapshot-metrics">Step 1: Clean up snapshot metrics</h4>
 
 Make sure that debezium metrics are enabled:
 
@@ -270,8 +266,7 @@ done
 echo "Done"
 ```
 
-
-#### Step 2: Lock the table and trigger the table snapshot
+<h4 id="step-2-lock-the-table-and-trigger-the-table-snapshot">Step 2: Lock the table and trigger the table snapshot</h4>
 
 Do this step in a separate console.
 
@@ -289,8 +284,7 @@ INSERT INTO debezium.debezium_signal (id, type, data) VALUES (gen_random_uuid(),
 COMMIT;
 ```
 
-
-#### Step 3: Wait until the snapshot is complete
+<h4 id="step-3-wait-until-the-snapshot-is-complete">Step 3: Wait until the snapshot is complete</h4>
 
 ```bash
 sStrimziNamespace="<strimzi_namespace>"
@@ -310,13 +304,13 @@ done
 echo "Done"
 ```
 
-#### Step 4: Release the table lock and start consumers
+<h4 id="step-4-release-the-table-lock-and-start-consumers">Step 4: Release the table lock and start consumers</h4>
 
 - Reset the consumer offsets to the end
 - Do `COMMIT;` on **step #2**
 - Start consumers
 
-#### Example of automating actions
+<h4 id="example-of-automating-actions">Example of automating actions</h4>
 
 ```bash
 sStrimziNamespace="<strimzi_namespace>"
