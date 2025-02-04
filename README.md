@@ -15,8 +15,6 @@
 |____/ \___|_.__/ \___/___|_|\__,_|_| |_| |_|                                             
 ```
 
----
-
 # Helm Chart for Apache Kafka Connect
 
 This project is an attempt to implement a declarative approach to managing connectors for **Apache Kafka Connect**.
@@ -30,7 +28,7 @@ Currently, the chart supports and has been tested with one type of connector: **
 That said, there is nothing preventing you from adding other connectors as needed.
 
 The project also includes:
-- Dockerfile containing a basic example for building an image with the necessary plugins.
+- [Dockerfile](/Dockerfile) containing a basic example for building an image with the necessary plugins.
 - [Documentation](docs) briefly describing the configuration capabilities of the chart and working with connectors:
   - [External references to official documentation](docs/HOW-TO-LINKS.md)
   - [Brief instructions on how to configure the Helm Chart](docs/HOW-TO-CONFIGURE.md)
@@ -43,3 +41,5 @@ It is highly recommended to first familiarize yourself with the official documen
 - [Confluent Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html)
 - [Debezium](https://debezium.io/documentation/reference/stable/index.html)
 - [Strimzi](https://strimzi.io/documentation/)
+
+---

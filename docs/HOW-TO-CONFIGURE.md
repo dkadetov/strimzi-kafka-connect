@@ -357,7 +357,7 @@ This section can contain any other custom Kubernetes manifests (e.g., `ExternalS
 
 ---
 
-<h2 id="special-note-on-tracingconfig">Special Note on `tracingConfig`</h2>
+<h2 id="special-note-on-tracingconfig">Special Note on tracing configuration</h2>
 
 There is an important detail regarding the use of the `opentelemetry` collector in `DaemonSet` mode.
 
