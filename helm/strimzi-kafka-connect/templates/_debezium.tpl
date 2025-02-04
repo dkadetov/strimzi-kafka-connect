@@ -50,7 +50,7 @@
     {{- $instanceContext := . }}
     {{- $regex := "" }}
 
-    {{- range $topicCreationGroups | replace "heartbeat" "" | nospace | splitList "," | compact }}
+    {{- range append ( $topicCreationGroups | replace "heartbeat" "" | nospace | splitList "," ) "default" | compact | uniq }}
       {{- $topicCreationGroupInclude = print "topic.creation." . ".include" }}
       {{- if and ( hasKey $instanceContext $topicCreationGroupInclude ) ( index $instanceContext $topicCreationGroupInclude | empty | not ) }}
         {{- $regex = "" }}
@@ -59,18 +59,18 @@
         {{- end }}
         {{- $tableIncludeList = ( index $instanceContext $topicCreationGroupInclude | list $tableIncludeList | join ", " | trimAll "," | trim ) }}
         {{- $_ := set $instanceContext $topicCreationGroupInclude $regex }}
-        {{- $topicCreationGroup = "default" }}
       {{- end }}
     {{- end }}
 
-    {{- if ne $topicCreationGroup "default" }}
+    {{- if $tableIncludeList | empty | not }}
+      {{- $_ := set . "table.include.list" $tableIncludeList }}
+      {{- $_ := unset . "topic.creation.default.include" }}
+    {{- else if ne $topicCreationGroup "default" }}
       {{- $tableIncludeList = index . "table.include.list" }}
       {{- range $tableIncludeList | nospace | splitList "," }}
         {{- $regex = . | trimPrefix ( regexFind ".*\\." . ) | print $topicPrefix "-connect." $databaseName "." | replace "." "\\." | list $regex | join "|" | trimAll "|" | trim }}
       {{- end }}
       {{- $_ := set . ( print "topic.creation." $topicCreationGroup ".include" ) $regex }}
-    {{- else }}
-      {{- $_ := set . "table.include.list" $tableIncludeList }}
     {{- end }}
   
     {{- if index . "transforms.RemoveString.replacement" | empty | not }}
