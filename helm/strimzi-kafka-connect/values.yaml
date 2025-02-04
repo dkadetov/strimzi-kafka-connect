@@ -90,7 +90,7 @@ strimziConfig:
   advancedConfig: {}
 
   metricsConfig:
-    enabled: true
+    enabled: false
     debeziumRules: true
     strimziRules: true
     type: jmxPrometheusExporter
@@ -104,9 +104,6 @@ strimziConfig:
     type: inline
     loggers:
       connect.root.logger.level: WARN # [INFO, ERROR, WARN, TRACE, DEBUG, FATAL, OFF]
-#      log4j.rootLogger: WARN
-#      log4j.logger.org.apache.kafka.connect.runtime.WorkerSourceTask: INFO
-#      log4j.logger.org.apache.kafka.connect.runtime.WorkerSinkTask: INFO
 
   tracingConfig:
     enabled: false
@@ -364,8 +361,9 @@ connectorConfig:
       transforms.RemoveString.replacement: '$1-connect.__db_name_placeholder__.$3'
 
 ## It seems to work only with debezium-interceptor: https://mvnrepository.com/artifact/io.debezium/debezium-interceptor
-## But Strimzi Operator does not allow to set this parameter https://strimzi.io/docs/operators/latest/configuring#type-KafkaConnectSpec-reference
-## It should have value: producer.interceptor.classes=io.debezium.tracing.DebeziumTracingProducerInterceptor
+## `producer.interceptor.classes: io.debezium.tracing.DebeziumTracingProducerInterceptor`
+## But Strimzi Operator does not allow to set this parameter:
+## https://strimzi.io/docs/operators/latest/configuring#type-KafkaConnectSpec-reference
 ## https://debezium.io/documentation/reference/stable/integrations/tracing.html
 ## https://github.com/debezium/debezium-examples/blob/main/outbox/debezium-strimzi/Dockerfile
 #      transforms.TracingSpan.type: io.debezium.transforms.tracing.ActivateTracingSpan
