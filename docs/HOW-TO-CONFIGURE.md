@@ -55,7 +55,7 @@ Below is the chart structure and only a few specific features.
 
 <h3 id="cluster-operator">⦿ clusterOperator</h3>
 
-Since using this chart requires the installation of the Strimzi Cluster Operator, it is included as a dependency in the form of a child chart.
+Since using this chart requires the installation of the Strimzi Cluster Operator, it is included as a child sub-chart.
 
 By default, the installation of the Strimzi Cluster Operator is not enabled.
 
@@ -357,7 +357,7 @@ This section can contain any other custom Kubernetes manifests (e.g., `ExternalS
 
 ---
 
-<h2 id="special-note-on-tracingconfig">Special Note on `tracingConfig`</h2>
+<h2 id="special-note-on-tracingconfig">Special Note on tracing configuration</h2>
 
 There is an important detail regarding the use of the `opentelemetry` collector in `DaemonSet` mode.
 

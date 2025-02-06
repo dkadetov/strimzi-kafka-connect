@@ -1,5 +1,5 @@
 
-# Brief instructions on how to work with PostgreSQL (Debezium case)
+# Short guide on working with PostgreSQL in the context of Debezium.
 
 ## Calculate the size of the WAL
 

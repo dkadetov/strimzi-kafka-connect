@@ -15,9 +15,7 @@
 |____/ \___|_.__/ \___/___|_|\__,_|_| |_| |_|                                             
 ```
 
----
-
-# Helm Chart for Apache Kafka Connect
+# Helm Chart for Apache Kafka Connect by Strimzi
 
 This project is an attempt to implement a declarative approach to managing connectors for **Apache Kafka Connect**.
 
@@ -30,16 +28,19 @@ Currently, the chart supports and has been tested with one type of connector: **
 That said, there is nothing preventing you from adding other connectors as needed.
 
 The project also includes:
-- Dockerfile containing a basic example for building an image with the necessary plugins.
-- [Documentation](docs) briefly describing the configuration capabilities of the chart and working with connectors:
-  - [External references to official documentation](docs/HOW-TO-LINKS.md)
-  - [Brief instructions on how to configure the Helm Chart](docs/HOW-TO-CONFIGURE.md)
-  - [Brief instructions on how to work with Strimzi Kafka Connect resources](docs/HOW-TO-STRIMZI.md)
-  - [Brief instructions on how to work with Debezium PostgreSQL Connector](docs/HOW-TO-DEBEZIUM.md)
-  - [Brief instructions on how to work with PostgreSQL (Debezium case)](docs/HOW-TO-POSTGRES.md)
+- [Dockerfile](/Dockerfile) containing a basic example for building an image with the necessary plugins.
+- [Documentation](/docs) briefly describing the configuration capabilities of the chart and working with connectors:
+  - [External references to official documentation](/docs/HOW-TO-LINKS.md)
+  - [How to install the Helm Chart](/docs/HOW-TO-INSTALL.md)
+  - [How to configure the Helm Chart](/docs/HOW-TO-CONFIGURE.md)
+  - [How to work with Strimzi Kafka Connect resources](/docs/HOW-TO-STRIMZI.md)
+  - [How to work with Debezium PostgreSQL Connector](/docs/HOW-TO-DEBEZIUM.md)
+  - [How to work with PostgreSQL in the Debezium context](/docs/HOW-TO-POSTGRES.md)
 
 It is highly recommended to first familiarize yourself with the official documentation:
 - [Apache Kafka](https://kafka.apache.org/documentation/#connectconfigs)
 - [Confluent Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html)
 - [Debezium](https://debezium.io/documentation/reference/stable/index.html)
 - [Strimzi](https://strimzi.io/documentation/)
+
+---

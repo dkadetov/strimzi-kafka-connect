@@ -13,6 +13,10 @@ strimziConfig:
 
   schemaRegistry: http://schema-registry.shared.svc.cluster.local:8081
 
+  metricsConfig:
+    enabled: true
+    debeziumRules: false
+
   loggingConfig:
     loggers:
       connect.root.logger.level: INFO
