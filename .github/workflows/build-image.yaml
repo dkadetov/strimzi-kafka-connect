@@ -63,17 +63,11 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4.2.0
 
-      - name: Patch Docker image tag
-        uses: rkretzschmar/patch-yaml-inside-yaml@v3
-        with:
-          documentFile: ./helm/${{ steps.meta_extra.outputs.chart_name }}/values.yaml
-          yamlPath: deploymentConfig.image.tag
-          newValue: ${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
-
       - name: Publish Helm Chart
         shell: bash
         working-directory: ./helm/${{ steps.meta_extra.outputs.chart_name }}
         run: |
+          sed -i "s|^\(\s*tag:\s*\)latest|\1$IMAGE_TAG|" values.yaml # patch docker image tag
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login $REPO --username ${{ github.actor }} --password-stdin
           helm lint .
           helm package . --version $TAG
@@ -83,3 +77,4 @@ jobs:
           CHART: ${{ steps.meta_extra.outputs.chart_name }}
           REPO: ${{ env.REGISTRY }}/${{ github.repository_owner }}
           TAG: ${{ github.ref_name }}
+          IMAGE_TAG: ${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
