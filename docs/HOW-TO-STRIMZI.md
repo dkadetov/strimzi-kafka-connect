@@ -3,7 +3,7 @@
 
 ## How to pause Strimzi Kafka Connect reconciliation
 
-Useful when you can't stop (scale to 0) Strimzi Operator
+Useful when you can't stop (scale to 0) the Strimzi Operator
 
 ```bash
 kubectl annotate KafkaConnect <kafka_connector_name> strimzi.io/pause-reconciliation="true"
@@ -17,7 +17,7 @@ kubectl annotate KafkaConnector <kafka_connector_name> strimzi.io/restart="true"
 
 ## How to restart connector task gracefully
 
-Not relevant to Debezium Connector as it always has only 1 task.
+Not relevant to the Debezium Connector as it always has only 1 task.
 
 ```bash
 kubectl annotate KafkaConnector <kafka_connector_name> strimzi.io/restart-task="0"

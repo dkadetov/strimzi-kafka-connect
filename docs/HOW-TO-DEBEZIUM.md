@@ -1,5 +1,5 @@
 
-<h1 id="top">Brief instructions on how to work with Debezium PostgreSQL Connector</h1>
+<h1 id="top">Brief instructions on how to work with the Debezium PostgreSQL Connector</h1>
 
 **Table of Contents**
 - [How to add new tables to an existing Kafka connector](#how-to-add-new-tables-to-an-existing-kafka-connector)

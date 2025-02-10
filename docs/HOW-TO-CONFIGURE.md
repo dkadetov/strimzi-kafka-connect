@@ -145,7 +145,7 @@ It is recommended to use the `otlp` exporter, even though the image also include
 
 Additionally, the image includes `opentelemetry-extension-trace-propagators`.
 
-The `values.yaml` file provides examples of possible parameters, so we won’t repeat them here.
+The `values.yaml` file provides examples of possible parameters, so we won't repeat them here.
 
 However, it is worth noting that all the parameters listed in this section ultimately populate the `deploymentConfig.extraEnv` section.
 
@@ -177,7 +177,7 @@ This section contains parameters specific to Kafka Connectors.
 
 Currently, the chart supports only one type of connector — Debezium PostgreSQL.
 
-However, there’s nothing stopping you from adding others as needed. See the example below.
+However, there's nothing stopping you from adding others as needed. See the example below.
 
 | Parameter                            | Description                                                                                                                   |
 |--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
