@@ -57,8 +57,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: latest=true
-          tags: type=semver,pattern=v{{version}}
+          tags: |
+            type=semver,pattern=v{{version}}
+            type=raw,value=latest,enable=${{ ! fromJSON(env.PUBLISH) }}
 
       - name: Extract metadata for Helm
         id: meta_extra
@@ -97,7 +98,8 @@ jobs:
         uses: ibiqlik/action-yamllint@v3
         if: ${{ ! fromJSON(env.PUBLISH) }}
         with:
-          file_or_dir: helm/**/values*.yaml
+          file_or_dir: ./helm/**/values*.yaml
+          format: github
           config_data: |
             extends: default
             rules:
