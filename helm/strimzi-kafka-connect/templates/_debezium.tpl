@@ -73,8 +73,8 @@
       {{- $_ := set . ( print "topic.creation." $topicCreationGroup ".include" ) $regex }}
     {{- end }}
   
-    {{- if index . "transforms.RemoveString.replacement" | empty | not }}
-      {{- $_ := set . "transforms.RemoveString.replacement" ( replace "__db_name_placeholder__" ( tpl ( index . "database.dbname" ) $ ) ( index . "transforms.RemoveString.replacement" )) }}
+    {{- if index . "transforms.RemoveSchemaName.replacement" | empty | not }}
+      {{- $_ := set . "transforms.RemoveSchemaName.replacement" ( replace "__db_name_placeholder__" ( tpl ( index . "database.dbname" ) $ ) ( index . "transforms.RemoveSchemaName.replacement" )) }}
     {{- end }}
 
     {{- $_ := set . "custom.metric.tags" ( print "connector=" ( tpl $connectorName $ )) }}
