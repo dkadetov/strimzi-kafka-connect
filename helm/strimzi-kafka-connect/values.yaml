@@ -345,7 +345,7 @@ connectorConfig:
       flush.lsn.source: true
       session.timeout.ms: 45000
       heartbeat.interval.ms: 10000
-      heartbeat.action.query: '' # See docs/HOW-TO-CONFIGURE.md#features
+      heartbeat.action.query: '' # See docs/HOW-TO-CONFIGURE.md#notes
       heartbeat.action.table: debezium.debezium_heartbeat # cannot be overridden at an instance level
       topic.heartbeat.prefix: '' # by default: '{{ $.Values.connectorConfig.debezium.instances[*].name }}-heartbeat'
       database.server.name: postgres
