@@ -104,6 +104,11 @@ strimziConfig:
     type: inline
     loggers:
       connect.root.logger.level: WARN # [INFO, ERROR, WARN, TRACE, DEBUG, FATAL, OFF]
+## Plaintext logging is used by default (provided for informational purposes)
+#      log4j.appender.CONSOLE: org.apache.log4j.ConsoleAppender
+#      log4j.appender.CONSOLE.layout: org.apache.log4j.PatternLayout
+## However, you can specify JSON, which may be necessary in log collection systems
+#      log4j.appender.CONSOLE.layout: net.logstash.log4j.JSONEventLayoutV1
 
   tracingConfig:
     enabled: false
@@ -355,10 +360,10 @@ connectorConfig:
       slot.name: '' # by default: connectorConfig.debezium.instances[*].name
       slot.max.retries: 6
       slot.retry.delay.ms: 10000
-      transforms: RemoveString
-      transforms.RemoveString.type: org.apache.kafka.connect.transforms.RegexRouter
-      transforms.RemoveString.regex: (.*)\.(public|debezium)\.(.*) # list all the schemas you use
-      transforms.RemoveString.replacement: '$1-connect.__db_name_placeholder__.$3'
+      transforms: RemoveSchemaName
+      transforms.RemoveSchemaName.type: org.apache.kafka.connect.transforms.RegexRouter
+      transforms.RemoveSchemaName.regex: (.*)\.(public|debezium)\.(.*) # list all the schemas you use
+      transforms.RemoveSchemaName.replacement: '$1-connect.__db_name_placeholder__.$3' # database name will be substituted automatically
 
 ## It seems to work only with debezium-interceptor: https://mvnrepository.com/artifact/io.debezium/debezium-interceptor
 ## `producer.interceptor.classes: io.debezium.tracing.DebeziumTracingProducerInterceptor`

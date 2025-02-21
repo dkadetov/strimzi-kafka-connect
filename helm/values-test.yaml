@@ -20,6 +20,8 @@ strimziConfig:
   loggingConfig:
     loggers:
       connect.root.logger.level: INFO
+      log4j.appender.CONSOLE: org.apache.log4j.ConsoleAppender
+      log4j.appender.CONSOLE.layout: net.logstash.log4j.JSONEventLayoutV1
 
   tracingConfig:
     enabled: true
