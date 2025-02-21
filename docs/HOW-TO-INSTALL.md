@@ -39,7 +39,7 @@ Now, you can safely install or upgrade the Strimzi Cluster Operator, as well as 
 ### Quick Installation
 
 ```bash
-helm install <release-name> oci://ghcr.io/dkadetov/strimzi-kafka-connect --version 1.0.3 --values <customized-values-file> --namespace strimzi
+helm install <release-name> oci://ghcr.io/dkadetov/strimzi-kafka-connect --version 1.0.4 --values <customized-values-file> --namespace strimzi
 ```
 
 ### Advanced Installation Approach
@@ -47,25 +47,25 @@ helm install <release-name> oci://ghcr.io/dkadetov/strimzi-kafka-connect --versi
 Download the latest stable version of the Helm chart.
 
 ```bash
-helm pull oci://ghcr.io/dkadetov/strimzi-kafka-connect --version 1.0.3
+helm pull oci://ghcr.io/dkadetov/strimzi-kafka-connect --version 1.0.4
 ```
 
 To preview generated sample manifests, you can use [values-test.yaml](/helm/values-test.yaml) for rendering.
 
 ```bash
-helm template strimzi-kafka-connect-1.0.3.tgz --values values-test.yaml
+helm template strimzi-kafka-connect-1.0.4.tgz --values values-test.yaml
 ```
 
 Create a configuration file with the necessary settings and check the rendered output.
 
 ```bash
-helm template strimzi-kafka-connect-1.0.3.tgz --values values-custom.yaml
+helm template strimzi-kafka-connect-1.0.4.tgz --values values-custom.yaml
 ```
 
 Install the chart (for example, in the `strimzi` namespace).
 
 ```bash
-helm upgrade <release-name> strimzi-kafka-connect-1.0.3.tgz --values values-custom.yaml --install --namespace strimzi
+helm upgrade <release-name> strimzi-kafka-connect-1.0.4.tgz --values values-custom.yaml --install --namespace strimzi
 ```
 
 ### Uninstalling the Chart
