@@ -91,7 +91,7 @@ strimziConfig:
 
   metricsConfig:
     enabled: false
-    debeziumRules: true
+    debeziumRules: false
     strimziRules: true
     type: jmxPrometheusExporter
     valueFrom:

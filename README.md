@@ -42,5 +42,3 @@ It is highly recommended to first familiarize yourself with the official documen
 - [Confluent Kafka Connect](https://docs.confluent.io/platform/current/connect/index.html)
 - [Debezium](https://debezium.io/documentation/reference/stable/index.html)
 - [Strimzi](https://strimzi.io/documentation/)
-
----

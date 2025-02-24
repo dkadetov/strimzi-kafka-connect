@@ -1,27 +1,21 @@
 ARG STRIMZI_VERSION=0.45.0-kafka-3.9.0-amd64
-ARG CONFLUENT_VERSION=7.8.0
+ARG CONFLUENT_VERSION=7.9.0
 ARG DEBEZIUM_VERSION=2.7.4
-ARG CONNECT_TRANSFORM_VERSION=1.6.1
-ARG CONNECT_JSON_SCHEMA_CONVERTER_VERSION=7.8.0
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.47.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
 ARG OTEL_EXP_ZIPKIN_VERSION=1.47.0
 ARG KUBECTL_VERSION=1.31.5
 
-# Install confluent avro converter & debezium connector
+# Install confluent avro converter
 FROM confluentinc/cp-kafka-connect:${CONFLUENT_VERSION} AS cp
 
 ARG CONFLUENT_VERSION
-ARG CONNECT_TRANSFORM_VERSION
-ARG CONNECT_JSON_SCHEMA_CONVERTER_VERSION
 
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-avro-converter:${CONFLUENT_VERSION} && \
-    confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:${CONNECT_JSON_SCHEMA_CONVERTER_VERSION} && \
-    confluent-hub install --no-prompt confluentinc/connect-transforms:${CONNECT_TRANSFORM_VERSION} && \
-    mkdir -p /tmp/kafka/plugins/avro /tmp/kafka/plugins/json-schema-converter /tmp/kafka/plugins/transforms && \
-    cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-avro-converter/lib/. /tmp/kafka/plugins/avro/ && \
-    cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-json-schema-converter/lib/. /tmp/kafka/plugins/json-schema-converter/ && \
-    cp -a /usr/share/confluent-hub-components/confluentinc-connect-transforms/lib/. /tmp/kafka/plugins/transforms/;
+    confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:${CONFLUENT_VERSION} && \
+    mkdir -p /tmp/kafka/plugins/avro-converter /tmp/kafka/plugins/json-schema-converter && \
+    cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-avro-converter/lib/. /tmp/kafka/plugins/avro-converter/ && \
+    cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-json-schema-converter/lib/. /tmp/kafka/plugins/json-schema-converter/;
 
 # Copy privious artifacts to the main strimzi kafka image
 FROM quay.io/strimzi/kafka:${STRIMZI_VERSION}
@@ -66,7 +60,7 @@ COPY --from=cp /tmp/kafka/plugins /opt/kafka/plugins/
 # Override to implement OTEL_EXPORTER_OTLP_AGENT_ENDPOINT support
 COPY --chmod=755 scripts/kafka_connect_run.sh /opt/kafka/
 
-# Grant permissions to 1001 user
+# Grant ownership to 1001 user
 RUN chown -R 1001:1001 /opt/kafka/plugins;
 
 USER 1001
