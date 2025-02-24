@@ -26,12 +26,12 @@ data:
     {{- if .Values.strimziConfig.metricsConfig.debeziumRules }}
       # Inspired by debezium rules
       # https://github.com/debezium/debezium-examples/blob/main/monitoring/debezium-jmx-exporter/config.yml
-      
-      - pattern : "kafka.connect<type=connect-worker-metrics>([^:]+):"
-        name: "kafka_connect_worker_metrics_$1"
-      
-      - pattern : "kafka.connect<type=connect-metrics, client-id=([^:]+)><>([^:]+)"
-        name: "kafka_connect_metrics_$2"
+
+      - pattern: "debezium.connect<type=connect-worker-metrics>([^:]+):"
+        name: "debezium_connect_worker_metrics_$1"
+
+      - pattern: "debezium.connect<type=connect-metrics, client-id=([^:]+)><>([^:]+)"
+        name: "debezium_connect_metrics_$2"
         labels:
           client: "$1"
       
