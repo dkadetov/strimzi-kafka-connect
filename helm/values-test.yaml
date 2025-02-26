@@ -8,6 +8,27 @@ clusterOperator:
   leaderElection:
     enable: true
 
+  logConfiguration: |
+    name = COConfig
+    monitorInterval = 30
+
+    appender.console.type = Console
+    appender.console.name = STDOUT
+    appender.console.layout.type = JsonLayout
+
+    rootLogger.level = WARN
+    rootLogger.appenderRefs = stdout
+    rootLogger.appenderRef.console.ref = STDOUT
+
+    logger.kafka.name = org.apache.kafka
+    logger.kafka.level = WARN
+
+    logger.zookeepertrustmanager.name = org.apache.zookeeper
+    logger.zookeepertrustmanager.level = WARN
+
+    logger.netty.name = io.netty
+    logger.netty.level = INFO
+
 strimziConfig:
   bootstrapServers: kafka.shared.svc.cluster.local:9092
 
@@ -20,7 +41,6 @@ strimziConfig:
   loggingConfig:
     loggers:
       connect.root.logger.level: INFO
-      log4j.appender.CONSOLE: org.apache.log4j.ConsoleAppender
       log4j.appender.CONSOLE.layout: net.logstash.log4j.JSONEventLayoutV1
 
   tracingConfig:

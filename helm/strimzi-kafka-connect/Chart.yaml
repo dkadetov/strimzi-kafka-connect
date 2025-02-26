@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: 3.9.0
 description: Strimzi Kafka Connect with Debezium Postgres Connector
 name: strimzi-kafka-connect
-version: 1.0.4
+version: 1.0.5
 type: application
 sources:
   - https://github.com/dkadetov/strimzi-kafka-connect
