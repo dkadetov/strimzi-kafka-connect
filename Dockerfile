@@ -35,7 +35,7 @@ RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium && \
          -o /tmp/debezium/debezium-connector-postgres.tar.gz && \
     tar -zxf /tmp/debezium/debezium-connector-postgres.tar.gz -C /tmp/debezium && \
     cp -a /tmp/debezium/debezium-connector-postgres/. /opt/kafka/plugins/debezium/ && \
-    chmod -R 644 /opt/kafka/plugins/debezium && \
+    chmod 644 /opt/kafka/plugins/debezium/* && \
     rm -rf /tmp/debezium; \
     # Fetch opentelemetry-extension-trace-propagators artifact
     curl -L https://repo1.maven.org/maven2/io/opentelemetry/opentelemetry-extension-trace-propagators/${OTEL_EXT_TRACE_PROPAGATORS_VERSION}/opentelemetry-extension-trace-propagators-${OTEL_EXT_TRACE_PROPAGATORS_VERSION}.jar \
