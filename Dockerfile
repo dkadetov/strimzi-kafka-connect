@@ -2,6 +2,7 @@ ARG STRIMZI_VERSION=0.45.0-kafka-3.9.0-amd64
 ARG CONFLUENT_VERSION=7.9.0
 ARG DEBEZIUM_VERSION=2.7.4
 ARG GROOVY_VERSION=4.0.25
+ARG CLOUDERA_VERSION=0.0.1.7.3.1.0-197
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.47.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
 ARG OTEL_EXP_ZIPKIN_VERSION=1.47.0
@@ -22,6 +23,7 @@ FROM quay.io/strimzi/kafka:${STRIMZI_VERSION}
 
 ARG DEBEZIUM_VERSION
 ARG GROOVY_VERSION
+ARG CLOUDERA_VERSION
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION
 ARG OTEL_EXP_JAEGER_VERSION
 ARG OTEL_EXP_ZIPKIN_VERSION
@@ -63,6 +65,12 @@ RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium && \
     curl -L https://repo1.maven.org/maven2/io/opentelemetry/opentelemetry-exporter-zipkin/${OTEL_EXP_ZIPKIN_VERSION}/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar \
          -o /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar && \
     chmod 644 /opt/kafka/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.jar; \
+    # Fetch cloudera artifacts \
+    mkdir /opt/kafka/plugins/cloudera && \
+    chmod 755 /opt/kafka/plugins/cloudera; \
+    curl -L https://repository.cloudera.com/repository/libs-release-local/com/cloudera/dim/kafka-connect/transformations/${CLOUDERA_VERSION}/transformations-${CLOUDERA_VERSION}-jar-with-dependencies.jar \
+         -o /opt/kafka/plugins/cloudera/transformations-jar-with-dependencies.jar; \
+    chmod 644 /opt/kafka/plugins/cloudera/*; \
     # Add kubectl
     curl -L https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
          -o /bin/kubectl && \
