@@ -45,6 +45,8 @@ spec:
   {{- with merge $instanceConfig $connectorConfig $commonConfig }}
     {{- if eq $kind "debezium" }}
       {{- template "debezium.connector" ( dict "name" $connectorName "mainContext" $ "instanceContext" . ) -}}
+    {{- else if eq $kind "separator" }}
+      {{- template "separator.connector" ( dict "name" $connectorName "mainContext" $ "instanceContext" . ) -}}
     {{- else }}
       {{/* insert here some another connector template */}}
     {{- end }}
