@@ -219,6 +219,8 @@ deploymentConfig:
   tmpDirSizeLimit: ''
 
   extraEnv:
+    - name: CLASSPATH
+      value: /opt/kafka/plugins/avro-converter/*
     - name: K8S_APP_NAME
       value: '{{ .Chart.Name }}'
     - name: K8S_APP_VERSION
@@ -380,6 +382,97 @@ connectorConfig:
 #      predicates: debeziumHeartbeat
 #      predicates.debeziumHeartbeat.type: org.apache.kafka.connect.transforms.predicates.TopicNameMatches
 #      predicates.debeziumHeartbeat.pattern: .*debezium_signal|.*-debezium-.*-heartbeat\..*
+
+  separator:
+    spec:
+      class: org.apache.kafka.connect.mirror.MirrorSourceConnector
+## Note: Since the MirrorSourceTask instances share the load over topic partitions,
+## there is no point setting the tasksMax property of the connector to higher than
+## the number of topic partitions that need to be replicated.
+      tasksMax: 6
+    instances: []
+    config:
+      source.cluster.alias: source
+      target.cluster.alias: target
+      source.cluster.bootstrap.servers: '{{ tpl $.Values.strimziConfig.bootstrapServers $ }}'
+      target.cluster.bootstrap.servers: ''
+      replication.factor: 3 # Relevant if DefaultReplicationPolicy is used (See description below)
+      replication.policy.separator: '-' # Relevant if DefaultReplicationPolicy is used (See description below)
+## We use `org.apache.kafka.connect.mirror.IdentityReplicationPolicy` instead of default
+## `org.apache.kafka.connect.mirror.DefaultReplicationPolicy` because it adds
+## ${source.cluster.alias}${replication.policy.separator} prefix (e.g. `source-`) to the output topic name.
+## But since we are using `source` type of connector, exactly this name is used by io.confluent.connect.avro.AvroConverter
+## And as a result the avro-schema will not be found as it does not have this prefix
+## However, this has certain aspects: first, we will have to add a prefix to the output topic in a different way
+## (this is required when using a single Kafka cluster, e.g. for demonstration purposes)
+## and second, the topic's parameters will not be replicated (so we will have to take care of this ourselves).
+      replication.policy.class: org.apache.kafka.connect.mirror.IdentityReplicationPolicy
+## Exclude internal kafka topics from a transformation chain
+      predicates: Heartbeats
+      predicates.Heartbeats.type: org.apache.kafka.connect.transforms.predicates.TopicNameMatches
+      predicates.Heartbeats.pattern: .*heartbeats|.*-debezium-.*-heartbeat\..*|.*debezium_signal
+## The chain: Avro > Filter > Json > Prefix
+      transforms: ConvertFromBytesKey, ConvertFromBytesValue, Filter, ConvertToBytesValue, ConvertToBytesKey, AddPrefix
+## Convert kafka message key from avro format
+      transforms.ConvertFromBytesKey.type: com.cloudera.dim.kafka.connect.transformations.convert.ConvertFromBytes$Key
+      transforms.ConvertFromBytesKey.converter: io.confluent.connect.avro.AvroConverter
+      transforms.ConvertFromBytesKey.converter.schema.registry.url: '{{ tpl $.Values.strimziConfig.schemaRegistry $ }}'
+      transforms.ConvertFromBytesKey.converter.schemas.enable: false
+      transforms.ConvertFromBytesKey.predicate: Heartbeats
+      transforms.ConvertFromBytesKey.negate: true
+## Convert kafka message value from avro format
+      transforms.ConvertFromBytesValue.type: com.cloudera.dim.kafka.connect.transformations.convert.ConvertFromBytes$Value
+      transforms.ConvertFromBytesValue.converter: io.confluent.connect.avro.AvroConverter
+      transforms.ConvertFromBytesValue.converter.schema.registry.url: '{{ tpl $.Values.strimziConfig.schemaRegistry $ }}'
+      transforms.ConvertFromBytesValue.converter.schemas.enable: false
+      transforms.ConvertFromBytesValue.predicate: Heartbeats
+      transforms.ConvertFromBytesValue.negate: true
+## Message Filtering
+      message.filter: '' # Replace with your specific condition
+      transforms.Filter.type: io.debezium.transforms.Filter
+      transforms.Filter.language: jsr223.groovy
+      transforms.Filter.condition: '' # by default: "message.filter", has higher priority
+      transforms.Filter.null.handling.mode: keep
+      transforms.Filter.predicate: Heartbeats
+      transforms.Filter.negate: true
+## Convert kafka message key to json format
+      transforms.ConvertToBytesValue.type: com.cloudera.dim.kafka.connect.transformations.convert.ConvertToBytes$Value
+      transforms.ConvertToBytesValue.converter: org.apache.kafka.connect.json.JsonConverter
+      transforms.ConvertToBytesValue.converter.schemas.enable: false # Enable if schema needs to be stored with the payload
+      transforms.ConvertToBytesValue.predicate: Heartbeats
+      transforms.ConvertToBytesValue.negate: true
+## Convert kafka message value to json format
+      transforms.ConvertToBytesKey.type: com.cloudera.dim.kafka.connect.transformations.convert.ConvertToBytes$Key
+      transforms.ConvertToBytesKey.converter: org.apache.kafka.connect.json.JsonConverter
+      transforms.ConvertToBytesKey.converter.schemas.enable: false # Enable if schema needs to be stored with the payload
+      transforms.ConvertToBytesKey.predicate: Heartbeats
+      transforms.ConvertToBytesKey.negate: true
+## Add prefix
+      transforms.AddPrefix.type: org.apache.kafka.connect.transforms.RegexRouter
+      transforms.AddPrefix.regex: (.*)
+      transforms.AddPrefix.replacement: '' # by default: topic.prefix-$1
+      transforms.AddPrefix.predicate: Heartbeats
+      transforms.AddPrefix.negate: true
+## No need for additional converting
+      key.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+      value.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+      header.converter: org.apache.kafka.connect.converters.ByteArrayConverter
+## Topic Filtering
+      topics: ''
+      topics.include: '' # "topics" alias, has higher priority
+      topics.exclude: .*heartbeats|.*-debezium-.*-heartbeat\..*|.*debezium_signal
+      topic.filter.class: org.apache.kafka.connect.mirror.DefaultTopicFilter
+      topic.prefix: '' # by default: "source.cluster.alias" in case of identical source & target bootstrap.servers
+## Disable specific sync parameters since we don't use "mirroring"
+      refresh.topics.enabled: true
+      refresh.topics.interval.seconds: 10
+      sync.topic.configs.enabled: true
+      sync.topic.configs.interval.seconds: 10
+      sync.topic.acls.enabled: false
+      emit.offset-syncs.enabled: false
+      emit.heartbeats.enabled: false
+      emit.checkpoints.enabled: false
+      sync.group.offsets.enabled: false
 
 externalConfig:
   rbac:

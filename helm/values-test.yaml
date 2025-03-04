@@ -156,6 +156,28 @@ connectorConfig:
           table.include.list: public.permission, public.role
           topic.creation.group: e2e
           namespace: e2e
+  separator:
+    spec:
+      tasksMax: 4
+    config:
+      target.cluster.bootstrap.servers: '{{ tpl $.Values.strimziConfig.bootstrapServers $ }}'
+    instances:
+      - name: '{{ $.Release.Name }}-separator-enrollment'
+        config:
+          topic.prefix: forwarded
+          topic.creation.group: dev
+          topics: vcloud-events-v.1, vcloud-events-v.2 # has a lower priority
+          topics.include: vcloud-enrollment-v.1, vcloud-enrollment-v.2 # has a higher priority
+          message.filter: key.tenant_id == 'XXXXXX' # has a lower priority
+          transforms.Filter.condition: key.tenant_id == 'YYYYYY' # has a higher priority
+      - name: '{{ $.Release.Name }}-separator-events'
+        spec:
+          tasksMax: 6
+        config:
+          target.cluster.bootstrap.servers: kafka.vcloud.svc.cluster.local:9092
+          topic.creation.compacted.include: vcloud-event-v.1, vcloud-host-v.1
+          topic.creation.deleted.include: vcloud-links-v.2, vcloud-role-v.2
+          message.filter: value.tenant_id == 'AAAAAA'
 
 externalConfig:
   rbac:

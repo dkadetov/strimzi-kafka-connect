@@ -46,16 +46,24 @@
 - [Sending signals to a Debezium connector #1](https://github.com/debezium/debezium-examples/blob/main/postgres-kafka-signal/README.md)
 - [Sending signals to a Debezium connector #2](https://debezium.io/documentation/reference/stable/configuration/signalling.html)
 - [Sending signals to a Debezium connector #3](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-triggering-an-incremental-snapshot)
+- [Message Filtering](https://debezium.io/documentation/reference/stable/transformations/filtering.html)
+- [Content-based routing](https://debezium.io/documentation/reference/stable/transformations/content-based-routing.html)
 
 ## Confluent Documentation
 
 - [Kafka Connect Overview](https://docs.confluent.io/platform/current/connect/index.html)
 - [Kafka Connect Configuration Reference](https://docs.confluent.io/platform/current/installation/configuration/connect/index.html)
-- [Using Kafka Connect with Schema Registry](https://docs.confluent.io/platform/7.7/schema-registry/connect.html)
+- [Using Kafka Connect with Schema Registry](https://docs.confluent.io/platform/current/schema-registry/connect.html)
 
 ## Apache Kafka Connect Documentation
 
+- [Kafka Connect](https://kafka.apache.org/documentation/#connect)
 - [Apache Kafka Connect Configs](https://kafka.apache.org/documentation/#connectconfigs)
+- [Single Message Transforms](https://kafka.apache.org/documentation.html#connect_transforms)
+- [MirrorMaker Configs](https://kafka.apache.org/documentation/#mirrormakerconfigs)
+- [Geo-Replication (Cross-Cluster Data Mirroring)](https://kafka.apache.org/documentation/#georeplication)
+- [KIP-382: MirrorMaker 2.0](https://cwiki.apache.org/confluence/display/KAFKA/KIP-382%3A+MirrorMaker+2.0)
+- [KIP-66: Single Message Transforms for Kafka Connect](https://cwiki.apache.org/confluence/display/KAFKA/KIP-66%3A+Single+Message+Transforms+for+Kafka+Connect)
 
 ## Red Hat Debezium Documentation
 
@@ -63,8 +71,13 @@
 
 ## Cloudera Documentation
 
-- [Deployment and Configuration](https://docs.cloudera.com/csm-operator/1.1/kafka-connect-deploy-configure/topics/csm-op-connect-deploying-clusters.html)
-- [Operations](https://docs.cloudera.com/csm-operator/1.1/kafka-connect-operations/topics/csm-op-connect-managing-connectors.html)
+- [Deployment and Configuration](https://docs.cloudera.com/csm-operator/1.3/kafka-connect-deploy-configure/topics/csm-op-connect-deploying-clusters.html)
+- [Operations](https://docs.cloudera.com/csm-operator/1.3/kafka-connect-operations/topics/csm-op-connect-managing-connectors.html)
+- [Replication overview](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-overview/topics/csm-op-connect-replication-overview.html)
+- [Deploying a replication flow](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-deploy-configure/topics/csm-op-deploying-replications.html)
+- [Single Message Transforms](https://docs.cloudera.com/csm-operator/1.3/kafka-connect-operations/topics/kafka-connect-smt-overview.html)
+- [Single Message Transforms overview](https://docs.cloudera.com/runtime/7.3.1/kafka-connect/topics/kafka-connect-smt-overview.html)
+- [Configuring SMT chain](https://docs.cloudera.com/runtime/7.3.1/kafka-connect/topics/kafka-connect-smt-configuring.html)
 
 ## Github Repositories
 
@@ -83,3 +96,6 @@
 - [Strimzi — Deploy Kafka in Kubernetes](https://medium.com/@howdyservices9/strimzi-deploy-kafka-in-kubernetes-dd740364861c)
 - [CDC using Debezium in Kubernetes](https://medium.com/@howdyservices9/cdc-using-debezium-in-kubernetes-f41448b7f5db)
 - [Change Data Capture (CDC) With Kafka Connect and the Debezium PostgreSQL Source Connector](https://instaclustr.medium.com/change-data-capture-cdc-with-kafka-connect-and-the-debezium-postgresql-source-connector-13a48eabfcb2)
+- [Unlocking the Power of Debezium](https://medium.com/payu-engineering/unlocking-the-power-of-debezium-69ce9170f101)
+- [Kafka Connect Deep Dive – Converters and Serialization Explained](https://www.confluent.io/blog/kafka-connect-deep-dive-converters-serialization-explained/)
+- [How to Use Single Message Transforms in Kafka Connect](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)
