@@ -17,7 +17,6 @@ RUN confluent-hub install --no-prompt confluentinc/kafka-connect-avro-converter:
     cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-avro-converter/lib/. /tmp/kafka/plugins/avro-converter/ && \
     cp -a /usr/share/confluent-hub-components/confluentinc-kafka-connect-json-schema-converter/lib/. /tmp/kafka/plugins/json-schema-converter/;
 
-# Copy privious artifacts to the main strimzi kafka image
 FROM quay.io/strimzi/kafka:${STRIMZI_VERSION}
 
 ARG DEBEZIUM_VERSION
@@ -34,7 +33,12 @@ RUN mkdir -p /tmp/debezium /opt/kafka/plugins/debezium && \
     curl -L https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/${DEBEZIUM_VERSION}.Final/debezium-connector-postgres-${DEBEZIUM_VERSION}.Final-plugin.tar.gz \
          -o /tmp/debezium/debezium-connector-postgres.tar.gz && \
     tar -zxf /tmp/debezium/debezium-connector-postgres.tar.gz -C /tmp/debezium && \
-    cp -a /tmp/debezium/debezium-connector-postgres/. /opt/kafka/plugins/debezium/ && \
+    cp -a /tmp/debezium/debezium-connector-postgres/* /opt/kafka/plugins/debezium/ && \
+    # Fetch debezium-scripting artifact
+    curl -L https://repo1.maven.org/maven2/io/debezium/debezium-scripting/${DEBEZIUM_VERSION}.Final/debezium-scripting-${DEBEZIUM_VERSION}.Final.tar.gz \
+         -o /tmp/debezium/debezium-scripting.tar.gz && \
+    tar -zxf /tmp/debezium/debezium-scripting.tar.gz -C /tmp/debezium && \
+    cp -a /tmp/debezium/debezium-scripting/* /opt/kafka/plugins/debezium/ && \
     chmod 644 /opt/kafka/plugins/debezium/* && \
     rm -rf /tmp/debezium; \
     # Fetch opentelemetry-extension-trace-propagators artifact
