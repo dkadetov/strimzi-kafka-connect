@@ -15,7 +15,7 @@
 |____/ \___|_.__/ \___/___|_|\__,_|_| |_| |_|                                             
 ```
 
-# Helm Chart for Apache Kafka Connect by Strimzi
+# Helm Chart for Apache Kafka Connect
 
 This project is an attempt to implement a declarative approach to managing connectors for **Apache Kafka Connect**.
 
@@ -45,7 +45,7 @@ It is highly recommended to first familiarize yourself with the official documen
 
 ---
 
-## Changes Introduced in version 1.1.0: Separator Connector
+## What's new in version 1.1.0: `separator` connector
 
 Although this project is based on the **Debezium PostgreSQL Connector** implementation, it was decided to add support for another connector to avoid duplicating the core logic of the Helm Chart in a separate project.
 

@@ -269,6 +269,11 @@ This content will be included in the generated ConfigMap with the corresponding 
 | `configMap.content.metricsConfig`            | Overrides the `jmxPrometheusExporter` configuration (also requires modifying the resource name for `strimziConfig.metricsConfig`)                                 |
 | `configMap.content.loggingConfig`            | Logging configuration, if you use `strimziConfig.loggingConfig.type: external`                                                                                    |
 
+It is also used for:
+- `externalConfig.debeziumConfig.initJob.extraVolumes["debezium-config"]`
+
+Thus, **if you enable `initJob`, you will have to enable** `configMap`.
+
 <h4 id="secret">‣ secret</h4>
 
 This section is responsible for generating the Kubernetes Secret manifest.
