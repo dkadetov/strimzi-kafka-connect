@@ -37,6 +37,7 @@
 
 ## Debezium Documentation
 
+- [Debezium Blog](https://debezium.io/blog/)
 - [Main page](https://debezium.io/documentation/reference/stable/index.html)
 - [Installing Debezium](https://debezium.io/documentation/reference/stable/install.html)
 - [Debezium connector for PostgreSQL](https://debezium.io/documentation/reference/stable/connectors/postgresql.html)
@@ -54,6 +55,7 @@
 - [Kafka Connect Overview](https://docs.confluent.io/platform/current/connect/index.html)
 - [Kafka Connect Configuration Reference](https://docs.confluent.io/platform/current/installation/configuration/connect/index.html)
 - [Using Kafka Connect with Schema Registry](https://docs.confluent.io/platform/current/schema-registry/connect.html)
+- [Configuration Reference for Debezium PostgreSQL Source Connector](https://docs.confluent.io/kafka-connectors/debezium-postgres-source/current/postgres_source_connector_config.html)
 
 ## Apache Kafka Connect Documentation
 
@@ -99,3 +101,8 @@
 - [Unlocking the Power of Debezium](https://medium.com/payu-engineering/unlocking-the-power-of-debezium-69ce9170f101)
 - [Kafka Connect Deep Dive – Converters and Serialization Explained](https://www.confluent.io/blog/kafka-connect-deep-dive-converters-serialization-explained/)
 - [How to Use Single Message Transforms in Kafka Connect](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)
+- [Towards Debezium exactly-once delivery](https://debezium.io/blog/2023/06/22/towards-exactly-once-delivery/)
+- [Enabling exactly-once semantics](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-deploy-configure/topics/csm-op-enabling-replication-eos.html)
+- [Common Challenges Using Debezium and Kafka Connect for CDC](https://olake.io/blog/issues-debezium-kafka)
+- [Real-time CDC replications between MySQL and PostgreSQL using Debezium connectors](https://timothyzhang.medium.com/real-time-cdc-replications-between-mysql-and-postgresql-using-debezium-connectors-24aa33d58f1e)
+- [Beyond the Basics of Debezium for PostgreSQL](https://medium.com/@arijit.mazumdar/beyond-the-basics-of-debezium-for-postgresql-part-1-d1c6952ae110)

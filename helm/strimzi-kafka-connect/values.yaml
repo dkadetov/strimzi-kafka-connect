@@ -465,9 +465,9 @@ connectorConfig:
       topic.prefix: '' # by default: "source.cluster.alias" in case of identical source & target bootstrap.servers
 ## Disable specific sync parameters since we don't use "mirroring"
       refresh.topics.enabled: true
-      refresh.topics.interval.seconds: 10
-      sync.topic.configs.enabled: true
-      sync.topic.configs.interval.seconds: 10
+      refresh.topics.interval.seconds: 60
+      sync.topic.configs.enabled: false
+      sync.topic.configs.interval.seconds: 60
       sync.topic.acls.enabled: false
       emit.offset-syncs.enabled: false
       emit.heartbeats.enabled: false
