@@ -85,6 +85,10 @@ jobs:
           tags: |
             type=semver,pattern=v{{version}}
             type=raw,value=latest,enable=${{ ! fromJSON(env.PUBLISH) }}
+          labels: |
+            org.opencontainers.image.licenses=AGPL-3.0
+            org.opencontainers.image.license_url=https://www.gnu.org/licenses/agpl-3.0.html
+            org.opencontainers.image.license_warning=Using this image requires compliance with GNU Affero General Public License v3.0
 
       - name: Extract metadata for Helm
         id: meta_extra
