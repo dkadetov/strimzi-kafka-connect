@@ -6,10 +6,10 @@
 {{- $schemaCmd := cat "CREATE SCHEMA IF NOT EXISTS" ( regexFind ".*\\." $heartbeatTable | trimSuffix "." ) }}
 {{- $script := "" }}
 {{- range $.Values.connectorConfig.debezium.instances }}
-  {{- with merge .config $.Values.connectorConfig.debezium.config }}
+  {{- with mergeOverwrite ( $.Values.connectorConfig.debezium.config | deepCopy ) .config }}
     {{- $script = cat "psql -d" ( index . "database.dbname" ) "-c" ( $schemaCmd | quote ) "|| exit 1;" | list $script | join " \n" | trim }}
     {{- $script = cat "psql -d" ( index . "database.dbname" ) "-c" ( $cmd | quote ) "|| exit 1;" | list $script | join " \n" | trim }}
-    {{- if ( index . "signal.enabled" ) }}
+    {{- if index . "signal.enabled" }}
       {{- $script = cat "psql -d" ( index . "database.dbname" ) "-c" ( $signalCmd | quote ) "|| exit 1;" | list $script | join " \n" | trim }}
     {{- end }}
   {{- end }}
@@ -78,9 +78,12 @@
     {{- end }}
 
     {{- $_ := set . "custom.metric.tags" ( print "connector=" ( tpl $connectorName $ )) }}
+    {{- if index . "signal.enabled" | not }}
+      {{- $_ := unset . "signal.data.collection" }}
+    {{- end }}
+    {{- $_ := unset . "signal.enabled" }}
     {{- $_ := unset . "namespace" }}
     {{- $_ := unset . "topic.creation.group" }}
-    {{- $_ := unset . "signal.enabled" }}
     {{- $_ := unset . "heartbeat.action.table" }}
   {{- end }}
 {{- end -}}
