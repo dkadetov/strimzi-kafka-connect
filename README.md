@@ -75,3 +75,12 @@ Additionally, the default replication policy (`replication.policy.class`) was re
 For further details:
 - The [values.yaml](/helm/strimzi-kafka-connect/values.yaml) file provides some additional explanations.
 - The [values-test.yaml](/helm/values-test.yaml) file contains a basic usage example.
+
+---
+
+## What's new in version 1.2.0
+
+In addition to CI improvements, this release also includes:
+- Added Apicurio [Converter](https://mvnrepository.com/artifact/io.apicurio/apicurio-registry-distro-connect-converter)
+- Added `RemoveField` [SMT](https://debezium.io/documentation/reference/stable/transformations/vitess-remove-field.html) and `ReplaceFieldValue` [SMT](https://debezium.io/documentation/reference/stable/transformations/vitess-replace-field-value.html)
+- Several fixes in Helm templates

@@ -66,6 +66,7 @@
 - [Geo-Replication (Cross-Cluster Data Mirroring)](https://kafka.apache.org/documentation/#georeplication)
 - [KIP-382: MirrorMaker 2.0](https://cwiki.apache.org/confluence/display/KAFKA/KIP-382%3A+MirrorMaker+2.0)
 - [KIP-66: Single Message Transforms for Kafka Connect](https://cwiki.apache.org/confluence/display/KAFKA/KIP-66%3A+Single+Message+Transforms+for+Kafka+Connect)
+- [KIP-585: Filter and Conditional SMTs](https://cwiki.apache.org/confluence/display/KAFKA/KIP-585%3A+Filter+and+Conditional+SMTs)
 
 ## Red Hat Debezium Documentation
 
@@ -101,6 +102,8 @@
 - [Unlocking the Power of Debezium](https://medium.com/payu-engineering/unlocking-the-power-of-debezium-69ce9170f101)
 - [Kafka Connect Deep Dive – Converters and Serialization Explained](https://www.confluent.io/blog/kafka-connect-deep-dive-converters-serialization-explained/)
 - [How to Use Single Message Transforms in Kafka Connect](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)
+- [Applying transformations selectively](https://debezium.io/documentation/reference/stable/transformations/applying-transformations-selectively.html)
+- [Twelve Days of SMT 🎄 Series' Articles](https://dev.to/rmoff/series/10047)
 - [Towards Debezium exactly-once delivery](https://debezium.io/blog/2023/06/22/towards-exactly-once-delivery/)
 - [Enabling exactly-once semantics](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-deploy-configure/topics/csm-op-enabling-replication-eos.html)
 - [Common Challenges Using Debezium and Kafka Connect for CDC](https://olake.io/blog/issues-debezium-kafka)
