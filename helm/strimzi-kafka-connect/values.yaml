@@ -219,8 +219,6 @@ deploymentConfig:
   tmpDirSizeLimit: ''
 
   extraEnv:
-    - name: CLASSPATH
-      value: /opt/kafka/plugins/avro-converter/*
     - name: K8S_APP_NAME
       value: '{{ .Chart.Name }}'
     - name: K8S_APP_VERSION

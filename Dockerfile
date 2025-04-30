@@ -82,7 +82,19 @@ COPY --from=cp /tmp/kafka/plugins /opt/kafka/plugins/
 # Override to implement OTEL_EXPORTER_OTLP_AGENT_ENDPOINT support
 COPY --chmod=755 scripts/kafka_connect_run.sh /opt/kafka/
 
-# Grant ownership to 1001 user
-RUN chown -R 1001:1001 /opt/kafka/plugins;
+# Export confluent-avro-converter for cloudera & Grant permissions to 1001 user
+RUN chown -R 1001:1001 /opt/kafka/plugins; \
+    mkdir -p /opt/kafka/ext_classpath/avro-converter && \
+    ln -s /opt/kafka/plugins/avro-converter/*-${CONFLUENT_VERSION}.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/avro-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/checker-qual-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/commons-codec-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/commons-compress-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/logredactor-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/logredactor-metrics-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/minimal-json-*.jar /opt/kafka/ext_classpath/avro-converter/; \
+    ln -s /opt/kafka/plugins/avro-converter/re2j-*.jar /opt/kafka/ext_classpath/avro-converter/;
+
+ENV CLASSPATH=/opt/kafka/ext_classpath/avro-converter/*
 
 USER 1001
