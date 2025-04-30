@@ -2,6 +2,7 @@ ARG STRIMZI_VERSION=0.45.0-kafka-3.9.0-amd64
 ARG CONFLUENT_VERSION=7.9.0
 ARG DEBEZIUM_VERSION=2.7.4
 ARG GROOVY_VERSION=4.0.25
+ARG APICURIO_VERSION=3.0.6
 ARG CLOUDERA_VERSION=0.0.1.7.3.1.100-57
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.47.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
@@ -23,6 +24,7 @@ FROM busybox:1.37.0 AS collector
 
 ARG DEBEZIUM_VERSION
 ARG GROOVY_VERSION
+ARG APICURIO_VERSION
 ARG CLOUDERA_VERSION
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION
 ARG OTEL_EXP_JAEGER_VERSION
@@ -66,6 +68,14 @@ RUN wget -O /tmp/libs/opentelemetry-exporter-zipkin-${OTEL_EXP_ZIPKIN_VERSION}.j
 RUN mkdir -p /tmp/plugins/cloudera && \
     wget -O /tmp/plugins/cloudera/transformations-jar-with-dependencies.jar https://repository.cloudera.com/repository/libs-release-local/com/cloudera/dim/kafka-connect/transformations/${CLOUDERA_VERSION}/transformations-${CLOUDERA_VERSION}-jar-with-dependencies.jar && \
     chmod 644 /tmp/plugins/cloudera/*;
+
+# Fetch apicurio-registry-distro-connect-converter artifact
+RUN mkdir -p /tmp/apicurio/apicurio-registry-distro-connect-converter /tmp/plugins/apicurio-converter && \
+    wget -O /tmp/apicurio/apicurio-registry-distro-connect-converter.tar.gz https://repo1.maven.org/maven2/io/apicurio/apicurio-registry-distro-connect-converter/${APICURIO_VERSION}/apicurio-registry-distro-connect-converter-${APICURIO_VERSION}.tar.gz && \
+    tar -zxf /tmp/apicurio/apicurio-registry-distro-connect-converter.tar.gz -C /tmp/apicurio/apicurio-registry-distro-connect-converter && \
+    cp -a /tmp/apicurio/apicurio-registry-distro-connect-converter/* /tmp/plugins/apicurio-converter/ && \
+    chmod 644 /tmp/plugins/apicurio-converter/* && \
+    rm -rf /tmp/apicurio;
 
 FROM quay.io/strimzi/kafka:${STRIMZI_VERSION} AS target
 
