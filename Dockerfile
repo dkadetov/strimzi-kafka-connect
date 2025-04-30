@@ -1,6 +1,7 @@
 ARG STRIMZI_VERSION=0.45.0-kafka-3.9.0-amd64
 ARG CONFLUENT_VERSION=7.9.0
 ARG DEBEZIUM_VERSION=2.7.4
+ARG DEBEZIUM_VITESS_VERSION=3.1.0
 ARG GROOVY_VERSION=4.0.25
 ARG APICURIO_VERSION=3.0.6
 ARG CLOUDERA_VERSION=0.0.1.7.3.1.100-57
@@ -8,6 +9,21 @@ ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION=1.47.0
 ARG OTEL_EXP_JAEGER_VERSION=1.34.1
 ARG OTEL_EXP_ZIPKIN_VERSION=1.47.0
 ARG KUBECTL_VERSION=1.31.5
+
+# Build debezium-transforms-vitess JAR artifact
+FROM maven:3.9.9-eclipse-temurin-17 AS repacker
+
+ARG DEBEZIUM_VITESS_VERSION
+
+COPY add-ons/debezium-transforms-vitess/pom.xml /build/
+
+WORKDIR /build
+
+RUN mvn clean package \
+        --define debezium.version=${DEBEZIUM_VITESS_VERSION}.Final \
+        --batch-mode \
+        --fail-at-end \
+        --quiet;
 
 # Install confluent avro converter
 FROM confluentinc/cp-kafka-connect:${CONFLUENT_VERSION} AS cp
@@ -29,8 +45,6 @@ ARG CLOUDERA_VERSION
 ARG OTEL_EXT_TRACE_PROPAGATORS_VERSION
 ARG OTEL_EXP_JAEGER_VERSION
 ARG OTEL_EXP_ZIPKIN_VERSION
-
-COPY --from=cp /tmp/kafka/plugins/ /tmp/plugins/
 
 # Fetch debezium-connector-postgres artifact
 RUN mkdir -p /tmp/debezium /tmp/plugins/debezium && \
@@ -77,8 +91,14 @@ RUN mkdir -p /tmp/apicurio/apicurio-registry-distro-connect-converter /tmp/plugi
     chmod 644 /tmp/plugins/apicurio-converter/* && \
     rm -rf /tmp/apicurio;
 
+# Copy debezium-transforms-vitess JAR artifact from previous stage
+COPY --from=repacker /build/target/debezium-transforms-vitess-*.jar /tmp/plugins/debezium/
+
+COPY --from=cp /tmp/kafka/plugins/ /tmp/plugins/
+
 FROM quay.io/strimzi/kafka:${STRIMZI_VERSION} AS target
 
+ARG CONFLUENT_VERSION
 ARG KUBECTL_VERSION
 
 USER root:root
