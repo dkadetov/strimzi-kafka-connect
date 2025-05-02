@@ -12,6 +12,7 @@
 - [Cloudera Documentation](#cloudera-documentation)
 - [Github Repositories](#github-repositories)
 - [Other Useful Links About Kafka-Connect](#other-useful-links-about-kafka-connect)
+- [Associated Projects](#associated-projects)
 
 ## Strimzi Documentation
 
@@ -66,6 +67,7 @@
 - [Geo-Replication (Cross-Cluster Data Mirroring)](https://kafka.apache.org/documentation/#georeplication)
 - [KIP-382: MirrorMaker 2.0](https://cwiki.apache.org/confluence/display/KAFKA/KIP-382%3A+MirrorMaker+2.0)
 - [KIP-66: Single Message Transforms for Kafka Connect](https://cwiki.apache.org/confluence/display/KAFKA/KIP-66%3A+Single+Message+Transforms+for+Kafka+Connect)
+- [KIP-585: Filter and Conditional SMTs](https://cwiki.apache.org/confluence/display/KAFKA/KIP-585%3A+Filter+and+Conditional+SMTs)
 
 ## Red Hat Debezium Documentation
 
@@ -94,15 +96,44 @@
 
 ## Other Useful Links About Kafka-Connect
 
+- [Redpanda: What is Kafka Connect — A complete guide](https://www.redpanda.com/guides/kafka-tutorial-what-is-kafka-connect)
+- [Introduction to Kafka Connectors](https://www.baeldung.com/kafka-connectors-guide)
+- [Getting started with Kafka Connectors](https://medium.com/@cobch7/kafka-connectors-8fb71ee27cb4)
 - [Step-by-Step Guide: Deploying Kafka Connect via Strimzi Operator on Kubernetes](https://itnext.io/step-by-step-guide-deploying-kafka-connect-via-strimzi-operator-on-kubernetes-6357c123abe9)
 - [Strimzi — Deploy Kafka in Kubernetes](https://medium.com/@howdyservices9/strimzi-deploy-kafka-in-kubernetes-dd740364861c)
+- [Self-Service CDC with Kafka Connect, Crossplane, and Strimzi](https://spoud-io.medium.com/self-service-cdc-with-kafka-connect-crossplane-and-strimzi-8c344122e929)
 - [CDC using Debezium in Kubernetes](https://medium.com/@howdyservices9/cdc-using-debezium-in-kubernetes-f41448b7f5db)
 - [Change Data Capture (CDC) With Kafka Connect and the Debezium PostgreSQL Source Connector](https://instaclustr.medium.com/change-data-capture-cdc-with-kafka-connect-and-the-debezium-postgresql-source-connector-13a48eabfcb2)
 - [Unlocking the Power of Debezium](https://medium.com/payu-engineering/unlocking-the-power-of-debezium-69ce9170f101)
-- [Kafka Connect Deep Dive – Converters and Serialization Explained](https://www.confluent.io/blog/kafka-connect-deep-dive-converters-serialization-explained/)
-- [How to Use Single Message Transforms in Kafka Connect](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)
-- [Towards Debezium exactly-once delivery](https://debezium.io/blog/2023/06/22/towards-exactly-once-delivery/)
-- [Enabling exactly-once semantics](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-deploy-configure/topics/csm-op-enabling-replication-eos.html)
 - [Common Challenges Using Debezium and Kafka Connect for CDC](https://olake.io/blog/issues-debezium-kafka)
 - [Real-time CDC replications between MySQL and PostgreSQL using Debezium connectors](https://timothyzhang.medium.com/real-time-cdc-replications-between-mysql-and-postgresql-using-debezium-connectors-24aa33d58f1e)
 - [Beyond the Basics of Debezium for PostgreSQL](https://medium.com/@arijit.mazumdar/beyond-the-basics-of-debezium-for-postgresql-part-1-d1c6952ae110)
+- [Transaction Log Tailing With Debezium — Part 1](https://medium.com/trendyol-tech/transaction-log-tailing-with-debezium-part-1-aeb968d72220)
+- [Transaction Log Tailing With Debezium — Part 2](https://medium.com/trendyol-tech/transaction-log-tailing-with-debezium-part-2-9ecaebf063b9)
+- [Mastering Kafka Connect: Advanced Source and Sink Configurations](https://www.codefro.com/2024/08/28/mastering-kafka-connect-advanced-source-and-sink-configurations/)
+- [Moving data from Kafka to OpenSearch](https://blog.devgenius.io/moving-data-from-kafka-to-opensearch-9ca52d0390fb)
+- [How to Set up Kafka and Stream Data to MinIO in Kubernetes](https://blog.min.io/stream-data-to-minio-using-kafka-kubernetes/)
+- [Introduction to Schema Registry in Kafka](https://medium.com/slalom-blog/introduction-to-schema-registry-in-kafka-915ccf06b902)
+- [Kafka Connect Deep Dive – Converters and Serialization Explained](https://www.confluent.io/blog/kafka-connect-deep-dive-converters-serialization-explained/)
+- [Processing Apache Avro-serialized messages from Kafka](https://dalelane.co.uk/blog/?p=5228)
+- [How to Use Single Message Transforms in Kafka Connect](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)
+- [Applying transformations selectively](https://debezium.io/documentation/reference/stable/transformations/applying-transformations-selectively.html)
+- [Twelve Days of SMT 🎄 Series' Articles](https://dev.to/rmoff/series/10047)
+- [Towards Debezium exactly-once delivery](https://debezium.io/blog/2023/06/22/towards-exactly-once-delivery/)
+- [Enabling exactly-once semantics](https://docs.cloudera.com/csm-operator/1.3/kafka-replication-deploy-configure/topics/csm-op-enabling-replication-eos.html)
+- [Kafka Connector with Custom Transformation](https://hadlakmal.medium.com/kafka-connector-with-custom-transformation-34e29c746c84)
+- [Debezium with Single Message Transformation (SMT)](https://medium.com/trendyol-tech/debezium-with-simple-message-transformation-smt-4f5a80c85358)
+- [Running the Apache Camel™ HTTP Kafka Source Connector](https://www.instaclustr.com/blog/running-the-apache-camel-http-kafka-source-connector/)
+- [Get Your Apache Camel™ Kafka Connectors in a Row](https://www.instaclustr.com/blog/get-your-apache-camel-kafka-connectors-in-a-row/)
+
+## Associated Projects
+
+- [Confluent demo-scene](https://github.com/confluentinc/demo-scene)
+- [Fully automated Apache Kafka® and Confluent® Docker based examples](https://github.com/vdesabou/kafka-docker-playground)
+- [Camel Kafka Connector](https://camel.apache.org/camel-kafka-connector/)
+- [Aiven Connectors & Transformations](https://github.com/Aiven-Open)
+- [Generic Kafka Connect transformations from Red Hat](https://github.com/RedHatInsights/connect-transforms)
+- [Kafka Connect Common Transformations](https://github.com/jcustenborder/kafka-connect-transform-common)
+- [Schema Registry Transfer SMT](https://github.com/OneCricketeer/schema-registry-transfer-smt)
+- [Axual Kafka Synchronisation Connectors](https://gitlab.com/axual/public/connect-plugins/kafka-synchronisation-connectors)
+- [Record to JSON String SMT](https://github.com/an0r0c/kafka-connect-transform-tojsonstring)

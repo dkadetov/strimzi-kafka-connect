@@ -1,10 +1,10 @@
 {{- range $kind, $connector := omit .Values.connectorConfig "common" }}
 {{- range $connector.instances }}
 {{- $connectorName := .name }}
-{{- $commonSpec := $.Values.connectorConfig.common.spec }}
+{{- $commonSpec := $.Values.connectorConfig.common.spec | deepCopy }}
 {{- $connectorSpec := $connector.spec }}
 {{- $instanceSpec := .spec }}
-{{- $commonConfig := $.Values.connectorConfig.common.config }}
+{{- $commonConfig := $.Values.connectorConfig.common.config | deepCopy }}
 {{- $connectorConfig := $connector.config }}
 {{- $instanceConfig := .config }}
 ---
@@ -21,7 +21,7 @@ metadata:
   annotations: {{- tpl ( toYaml $.Values.commonAnnotations ) $ | nindent 4 }}
 {{- end }}
 spec:
-{{- with merge $instanceSpec $connectorSpec $commonSpec }}
+{{- with mergeOverwrite $commonSpec $connectorSpec $instanceSpec }}
   state: {{ .state }}
   class: {{ .class }}
   tasksMax: {{ .tasksMax }}
@@ -42,7 +42,7 @@ spec:
   {{- end }}
 {{- end }}
   config:
-  {{- with merge $instanceConfig $connectorConfig $commonConfig }}
+  {{- with mergeOverwrite $commonConfig $connectorConfig $instanceConfig }}
     {{- if eq $kind "debezium" }}
       {{- template "debezium.connector" ( dict "name" $connectorName "mainContext" $ "instanceContext" . ) -}}
     {{- else if eq $kind "separator" }}

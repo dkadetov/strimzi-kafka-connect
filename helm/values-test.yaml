@@ -58,7 +58,7 @@ deploymentConfig:
   replicaCount: 2
 
   image:
-    tag: 0.44.0-kafka-3.8.0-debezium-2.7.4-amd64
+    tag: 0.45.0-kafka-3.9.0-amd64
 
   jvmOptions:
     -Xms: 1792M
@@ -156,6 +156,7 @@ connectorConfig:
           table.include.list: public.permission, public.role
           topic.creation.group: e2e
           namespace: e2e
+          signal.enabled: false
   separator:
     spec:
       tasksMax: 4
